@@ -1,0 +1,177 @@
+{
+ "actions": [],
+ "autoname": "format:CTPOS-{symbol}-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "symbol",
+  "status",
+  "column_break_1",
+  "buy_price",
+  "quantity",
+  "entry_time",
+  "section_break_targets",
+  "target_price",
+  "stop_loss",
+  "trailing_stoploss",
+  "column_break_2",
+  "current_price",
+  "pnl_inr",
+  "pnl_pct",
+  "section_break_close",
+  "close_reason",
+  "close_time",
+  "exchange_order_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nClosed\nStopped",
+   "reqd": 1,
+   "default": "Open"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buy_price",
+   "fieldtype": "Currency",
+   "label": "Buy Price (INR)",
+   "options": "INR",
+   "reqd": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "entry_time",
+   "fieldtype": "Datetime",
+   "label": "Entry Time"
+  },
+  {
+   "fieldname": "section_break_targets",
+   "fieldtype": "Section Break",
+   "label": "Targets & Risk"
+  },
+  {
+   "fieldname": "target_price",
+   "fieldtype": "Currency",
+   "label": "Target Price (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "stop_loss",
+   "fieldtype": "Currency",
+   "label": "Stop Loss (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "trailing_stoploss",
+   "fieldtype": "Currency",
+   "label": "Trailing Stop Loss (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_price",
+   "fieldtype": "Currency",
+   "label": "Current Price (INR)",
+   "options": "INR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pnl_inr",
+   "fieldtype": "Currency",
+   "label": "P&L (INR)",
+   "options": "INR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pnl_pct",
+   "fieldtype": "Float",
+   "label": "P&L (%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_close",
+   "fieldtype": "Section Break",
+   "label": "Close Details"
+  },
+  {
+   "fieldname": "close_reason",
+   "fieldtype": "Select",
+   "label": "Close Reason",
+   "options": "\nTarget Hit\nStop Loss\nTrailing Stop\nManual\nBot Paused\nMax Daily Loss"
+  },
+  {
+   "fieldname": "close_time",
+   "fieldtype": "Datetime",
+   "label": "Close Time"
+  },
+  {
+   "fieldname": "exchange_order_id",
+   "fieldtype": "Data",
+   "label": "Exchange Order ID"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Open Position",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

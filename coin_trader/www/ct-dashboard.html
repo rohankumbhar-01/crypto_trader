@@ -1,0 +1,134 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Coin Trader Dashboard{% endblock %}
+
+{% block head_include %}
+<link rel="stylesheet" href="/assets/coin_trader/css/ct_dashboard.css">
+{% endblock %}
+
+{% block page_content %}
+<div class="ct-dashboard">
+
+  <!-- ── Header bar ─────────────────────────────────────── -->
+  <div class="ct-header">
+    <div class="ct-header-left">
+      <span class="ct-logo">₿</span>
+      <h1 class="ct-title">Coin Trader</h1>
+      {% if dry_run %}
+        <span class="ct-badge ct-badge-paper">PAPER TRADING</span>
+      {% else %}
+        <span class="ct-badge ct-badge-live">LIVE</span>
+      {% endif %}
+      {% if not model_trained %}
+        <span class="ct-badge ct-badge-warn">MODEL NOT TRAINED</span>
+      {% endif %}
+    </div>
+    <div class="ct-header-right">
+      <div class="ct-stat-pill">
+        <span class="ct-stat-label">Open Positions</span>
+        <span class="ct-stat-value" id="hdr-open-count">{{ open_positions_count }}</span>
+      </div>
+      <div class="ct-stat-pill {% if today_pnl >= 0 %}ct-pos{% else %}ct-neg{% endif %}">
+        <span class="ct-stat-label">Today PnL</span>
+        <span class="ct-stat-value" id="hdr-today-pnl">₹{{ "{:,.0f}".format(today_pnl) }}</span>
+      </div>
+      <button class="ct-btn ct-btn-primary" id="btn-scan">
+        <span id="btn-scan-text">Run Scan</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Symbol picker & quick probe ───────────────────── -->
+  <div class="ct-toolbar">
+    <select id="symbol-select" class="ct-select">
+      {% if symbols %}
+        {% for s in symbols %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      {% else %}
+        <option value="" disabled selected>No symbols — add in CT Trading Config</option>
+      {% endif %}
+    </select>
+    <select id="interval-select" class="ct-select">
+      {% for iv in ["1m","5m","15m","30m","1h","4h","1d"] %}
+        <option value="{{ iv }}" {% if iv == interval %}selected{% endif %}>{{ iv }}</option>
+      {% endfor %}
+    </select>
+    <button class="ct-btn ct-btn-secondary" id="btn-probe">Get Signal</button>
+    <button class="ct-btn ct-btn-secondary" id="btn-backtest">Run Backtest</button>
+    {% if not is_active %}
+      <span class="ct-badge ct-badge-warn" style="margin-left:8px;">
+        No active config — <a href="/app/ct-trading-config/new" style="color:inherit;text-decoration:underline;">create CT Trading Config</a>
+      </span>
+    {% endif %}
+    <span class="ct-last-scan" id="last-scan-time">Last scan: —</span>
+  </div>
+
+  <!-- ── Main grid ──────────────────────────────────────── -->
+  <div class="ct-grid">
+
+    <!-- ML Probability Panel -->
+    <div class="ct-card" id="card-probability">
+      <div class="ct-card-header">
+        <span class="ct-card-title">ML Signal</span>
+        <span class="ct-spinner hidden" id="prob-spinner">⟳</span>
+      </div>
+      <div class="ct-card-body" id="prob-body">
+        <div class="ct-signal-placeholder">Select a symbol and click "Get Signal"</div>
+      </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="ct-card" id="card-positions">
+      <div class="ct-card-header">
+        <span class="ct-card-title">Open Positions</span>
+        <button class="ct-btn ct-btn-xs" id="btn-refresh-pos">Refresh</button>
+      </div>
+      <div class="ct-card-body">
+        <div id="positions-table-wrap">
+          <div class="ct-empty-state">Loading positions…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Scan Results -->
+    <div class="ct-card ct-card-full" id="card-scan">
+      <div class="ct-card-header">
+        <span class="ct-card-title">Latest Scan Results</span>
+        <span class="ct-badge ct-badge-info" id="scan-symbol-count"></span>
+      </div>
+      <div class="ct-card-body">
+        <div id="scan-results-wrap">
+          <div class="ct-empty-state">Run a scan to see results.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trade History -->
+    <div class="ct-card ct-card-full" id="card-history">
+      <div class="ct-card-header">
+        <span class="ct-card-title">Recent Trades</span>
+      </div>
+      <div class="ct-card-body">
+        <div id="trade-history-wrap">
+          <div class="ct-empty-state">Loading trade history…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backtest Result -->
+    <div class="ct-card ct-card-full hidden" id="card-backtest">
+      <div class="ct-card-header">
+        <span class="ct-card-title">Backtest Result</span>
+        <button class="ct-btn ct-btn-xs" id="btn-close-bt">✕</button>
+      </div>
+      <div class="ct-card-body" id="backtest-body"></div>
+    </div>
+
+  </div><!-- /ct-grid -->
+
+</div><!-- /ct-dashboard -->
+
+<script>window._CT = { symbols: {{ symbols | tojson }}, interval: "{{ interval }}", min_conf: {{ min_conf }} };</script>
+<script src="/assets/coin_trader/js/ct_dashboard.js"></script>
+{% endblock %}

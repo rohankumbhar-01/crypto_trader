@@ -1,0 +1,318 @@
+/* ── Coin Trader Dashboard ───────────────────────────────────────────── */
+
+:root {
+  --ct-bg:        #0f1117;
+  --ct-surface:   #1a1d27;
+  --ct-border:    #2a2d3a;
+  --ct-text:      #e2e8f0;
+  --ct-muted:     #8892a4;
+  --ct-buy:       #22c55e;
+  --ct-sell:      #ef4444;
+  --ct-hold:      #94a3b8;
+  --ct-accent:    #f39c12;
+  --ct-radius:    8px;
+  --ct-shadow:    0 2px 12px rgba(0,0,0,0.4);
+}
+
+.ct-dashboard {
+  background: var(--ct-bg);
+  min-height: 100vh;
+  color: var(--ct-text);
+  font-family: "Inter", -apple-system, sans-serif;
+  padding: 0 0 40px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+.ct-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: var(--ct-surface);
+  border-bottom: 1px solid var(--ct-border);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ct-header-left { display: flex; align-items: center; gap: 12px; }
+.ct-header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.ct-logo { font-size: 28px; }
+
+.ct-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ct-accent);
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────── */
+
+.ct-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--ct-border);
+  color: var(--ct-muted);
+}
+
+.ct-badge-paper   { background: #1e3a5f; color: #60a5fa; }
+.ct-badge-live    { background: #14532d; color: var(--ct-buy); }
+.ct-badge-warn    { background: #431407; color: #fb923c; }
+.ct-badge-danger  { background: #450a0a; color: var(--ct-sell); }
+.ct-badge-success { background: #14532d; color: var(--ct-buy); }
+.ct-badge-info    { background: #1e1b4b; color: #a5b4fc; }
+
+/* ── Stat pills ──────────────────────────────────────────────────────── */
+
+.ct-stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 16px;
+  background: var(--ct-bg);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius);
+  min-width: 90px;
+}
+
+.ct-stat-label { font-size: 10px; color: var(--ct-muted); text-transform: uppercase; }
+.ct-stat-value { font-size: 18px; font-weight: 700; }
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+
+.ct-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  background: var(--ct-surface);
+  border-bottom: 1px solid var(--ct-border);
+  flex-wrap: wrap;
+}
+
+.ct-select {
+  background: var(--ct-bg);
+  color: var(--ct-text);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius);
+  padding: 6px 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  min-width: 120px;
+  max-width: 320px;
+}
+
+.ct-last-scan { font-size: 12px; color: var(--ct-muted); margin-left: auto; }
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+
+.ct-btn {
+  padding: 7px 18px;
+  border-radius: var(--ct-radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.ct-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ct-btn-primary   { background: var(--ct-accent); color: #000; }
+.ct-btn-secondary { background: var(--ct-surface); color: var(--ct-text); border: 1px solid var(--ct-border); }
+.ct-btn-danger    { background: #450a0a; color: var(--ct-sell); padding: 3px 10px; }
+.ct-btn-xs        { padding: 3px 10px; font-size: 12px; }
+
+/* ── Grid ────────────────────────────────────────────────────────────── */
+
+.ct-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  padding: 24px 28px;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────── */
+
+.ct-card {
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius);
+  box-shadow: var(--ct-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ct-card-full {
+  grid-column: 1 / -1;
+}
+
+.ct-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ct-border);
+  background: var(--ct-bg);
+}
+
+.ct-card-title { font-size: 14px; font-weight: 600; color: var(--ct-text); }
+
+.ct-card-body { padding: 16px 18px; flex: 1; overflow-x: auto; }
+
+/* ── Signal panel ────────────────────────────────────────────────────── */
+
+.ct-signal-placeholder, .ct-empty-state, .ct-loading {
+  color: var(--ct-muted);
+  font-size: 13px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.ct-signal-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border-radius: var(--ct-radius);
+  background: var(--ct-bg);
+}
+
+.ct-signal-label { font-size: 28px; font-weight: 800; min-width: 80px; }
+
+.ct-conf-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--ct-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ct-conf-bar {
+  height: 100%;
+  background: var(--ct-accent);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.ct-conf-value { font-size: 18px; font-weight: 700; min-width: 48px; text-align: right; }
+
+.ct-signal-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+.ct-signal-probs { font-size: 15px; font-weight: 600; margin-bottom: 12px; display: flex; gap: 16px; }
+
+.ct-levels-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+.ct-levels-table td { padding: 5px 8px; border-bottom: 1px solid var(--ct-border); }
+.ct-levels-table td:last-child { text-align: right; font-weight: 600; }
+
+.ct-ai-reason {
+  font-size: 12px;
+  color: var(--ct-muted);
+  font-style: italic;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.ct-risk-flags { font-size: 12px; color: #fb923c; margin-top: 6px; }
+.ct-flag { display: inline-block; margin: 2px 4px; }
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.ct-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ct-table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--ct-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--ct-border);
+}
+
+.ct-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--ct-border);
+  vertical-align: middle;
+}
+
+.ct-table tr:last-child td { border-bottom: none; }
+.ct-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.ct-reason { max-width: 220px; font-size: 11px; color: var(--ct-muted); }
+
+/* ── Colours ─────────────────────────────────────────────────────────── */
+
+.ct-buy  { color: var(--ct-buy); }
+.ct-sell { color: var(--ct-sell); }
+.ct-hold { color: var(--ct-hold); }
+.ct-pos  { color: var(--ct-buy); }
+.ct-neg  { color: var(--ct-sell); }
+.ct-error { color: var(--ct-sell); font-size: 13px; padding: 16px 0; }
+
+/* ── Spinner ─────────────────────────────────────────────────────────── */
+
+.ct-spinner {
+  display: inline-block;
+  animation: ct-spin 1s linear infinite;
+  font-size: 16px;
+  color: var(--ct-accent);
+}
+
+@keyframes ct-spin { to { transform: rotate(360deg); } }
+
+/* ── History footer ──────────────────────────────────────────────────── */
+
+.ct-history-footer {
+  font-size: 12px;
+  color: var(--ct-muted);
+  margin-top: 10px;
+  text-align: right;
+}
+
+/* ── Backtest ─────────────────────────────────────────────────────────── */
+
+.ct-bt-summary h3 { font-size: 15px; margin: 0 0 16px; color: var(--ct-accent); }
+
+.ct-bt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ct-bt-stat {
+  background: var(--ct-bg);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius);
+  padding: 10px 14px;
+}
+
+.ct-bt-label { font-size: 11px; color: var(--ct-muted); text-transform: uppercase; margin-bottom: 4px; }
+.ct-bt-value { font-size: 18px; font-weight: 700; }
+
+.ct-bt-trades h4 { font-size: 13px; color: var(--ct-muted); margin: 0 0 10px; }
+
+/* ── Utility ─────────────────────────────────────────────────────────── */
+
+.hidden { display: none !important; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .ct-grid { grid-template-columns: 1fr; }
+  .ct-card-full { grid-column: 1; }
+  .ct-header { flex-direction: column; align-items: flex-start; }
+}

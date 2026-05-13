@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "autoname": "format:CTFUT-{symbol}-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "symbol",
+  "status",
+  "column_break_1",
+  "entry_price",
+  "target_price",
+  "stop_loss",
+  "expiry_time",
+  "section_break_ml",
+  "ml_confidence",
+  "ml_prediction_ref"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nTriggered\nExpired\nCancelled",
+   "reqd": 1,
+   "default": "Pending"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "entry_price",
+   "fieldtype": "Currency",
+   "label": "Entry Price (INR)",
+   "options": "INR",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_price",
+   "fieldtype": "Currency",
+   "label": "Target Price (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "stop_loss",
+   "fieldtype": "Currency",
+   "label": "Stop Loss (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "expiry_time",
+   "fieldtype": "Datetime",
+   "label": "Expiry Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_ml",
+   "fieldtype": "Section Break",
+   "label": "ML Context"
+  },
+  {
+   "fieldname": "ml_confidence",
+   "fieldtype": "Float",
+   "label": "ML Confidence at Signal (%)"
+  },
+  {
+   "fieldname": "ml_prediction_ref",
+   "fieldtype": "Link",
+   "label": "ML Prediction",
+   "options": "CT ML Prediction"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Future Order",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

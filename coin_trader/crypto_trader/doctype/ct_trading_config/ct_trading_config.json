@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "autoname": "format:CTCFG-{user}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "is_active",
+  "dry_run",
+  "section_break_trade",
+  "inr_per_trade",
+  "max_positions",
+  "column_break_1",
+  "profit_target_pct",
+  "stop_loss_pct",
+  "section_break_risk",
+  "max_daily_loss_inr",
+  "cooldown_after_loss_min",
+  "column_break_2",
+  "max_consecutive_losses",
+  "section_break_ml",
+  "min_confidence_pct",
+  "candle_interval",
+  "column_break_3",
+  "scan_interval_min",
+  "section_break_symbols",
+  "symbols"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Bot Active",
+   "default": 0
+  },
+  {
+   "fieldname": "dry_run",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Paper Trading (Dry Run)",
+   "default": 1,
+   "description": "When enabled, no real orders are placed. Disable only after successful paper trading phase."
+  },
+  {
+   "fieldname": "section_break_trade",
+   "fieldtype": "Section Break",
+   "label": "Trade Settings"
+  },
+  {
+   "fieldname": "inr_per_trade",
+   "fieldtype": "Currency",
+   "label": "INR Per Trade",
+   "reqd": 1,
+   "default": 500,
+   "options": "INR"
+  },
+  {
+   "fieldname": "max_positions",
+   "fieldtype": "Int",
+   "label": "Max Open Positions",
+   "reqd": 1,
+   "default": 2
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "profit_target_pct",
+   "fieldtype": "Float",
+   "label": "Profit Target (%)",
+   "reqd": 1,
+   "default": 2.0
+  },
+  {
+   "fieldname": "stop_loss_pct",
+   "fieldtype": "Float",
+   "label": "Stop Loss (%)",
+   "reqd": 1,
+   "default": 1.0
+  },
+  {
+   "fieldname": "section_break_risk",
+   "fieldtype": "Section Break",
+   "label": "Risk Management"
+  },
+  {
+   "fieldname": "max_daily_loss_inr",
+   "fieldtype": "Currency",
+   "label": "Max Daily Loss (INR)",
+   "reqd": 1,
+   "default": 1000,
+   "options": "INR"
+  },
+  {
+   "fieldname": "cooldown_after_loss_min",
+   "fieldtype": "Int",
+   "label": "Cooldown After Loss (min)",
+   "default": 30
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max_consecutive_losses",
+   "fieldtype": "Int",
+   "label": "Max Consecutive Losses",
+   "default": 3
+  },
+  {
+   "fieldname": "section_break_ml",
+   "fieldtype": "Section Break",
+   "label": "ML & Scan Settings"
+  },
+  {
+   "fieldname": "min_confidence_pct",
+   "fieldtype": "Float",
+   "label": "Min ML Confidence (%)",
+   "default": 80.0,
+   "description": "AI validation is only called if ML confidence exceeds this threshold."
+  },
+  {
+   "fieldname": "candle_interval",
+   "fieldtype": "Select",
+   "label": "Candle Interval",
+   "options": "1m\n3m\n5m\n15m\n30m\n1h\n2h\n4h\n6h\n1d",
+   "default": "15m"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scan_interval_min",
+   "fieldtype": "Int",
+   "label": "Scan Interval (min)",
+   "default": 15
+  },
+  {
+   "fieldname": "section_break_symbols",
+   "fieldtype": "Section Break",
+   "label": "Trading Symbols"
+  },
+  {
+   "fieldname": "symbols",
+   "fieldtype": "Table",
+   "label": "Symbols",
+   "options": "CT Trading Symbol"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Trading Config",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "read": 1,
+   "role": "Trader",
+   "write": 1,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

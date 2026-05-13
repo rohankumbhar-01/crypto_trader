@@ -1,0 +1,38 @@
+{
+ "actions": [],
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "symbol",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled",
+   "default": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Trading Symbol",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

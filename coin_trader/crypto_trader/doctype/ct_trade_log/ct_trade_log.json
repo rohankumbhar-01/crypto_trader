@@ -1,0 +1,137 @@
+{
+ "actions": [],
+ "autoname": "format:CTLOG-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "trade_time",
+  "action",
+  "symbol",
+  "column_break_1",
+  "quantity",
+  "price",
+  "pnl_inr",
+  "pnl_pct",
+  "section_break_reason",
+  "reason",
+  "is_paper_trade",
+  "position_ref"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "trade_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Trade Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Action",
+   "options": "BUY\nSELL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price (INR)",
+   "options": "INR",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pnl_inr",
+   "fieldtype": "Currency",
+   "label": "P&L (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "pnl_pct",
+   "fieldtype": "Float",
+   "label": "P&L (%)"
+  },
+  {
+   "fieldname": "section_break_reason",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Data",
+   "label": "Reason"
+  },
+  {
+   "fieldname": "is_paper_trade",
+   "fieldtype": "Check",
+   "label": "Paper Trade",
+   "default": 1
+  },
+  {
+   "fieldname": "position_ref",
+   "fieldtype": "Link",
+   "label": "Position",
+   "options": "CT Open Position"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Trade Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "trade_time",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

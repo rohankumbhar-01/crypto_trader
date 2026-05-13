@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ML models (large binary files — regenerate with daily_ml_retrain)
+coin_trader/ml/models/
+
+# Frappe
+*.pyc
+node_modules/
+.DS_Store
+
+# Secrets — never commit credentials
+*.env
+.env.*

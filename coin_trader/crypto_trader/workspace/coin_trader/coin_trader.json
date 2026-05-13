@@ -1,0 +1,208 @@
+{
+ "app": "coin_trader",
+ "charts": [],
+ "content": "[{\"id\":\"ct_hdr_trading\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Live Trading</b></span>\",\"col\":12}},{\"id\":\"ct_card_trading\",\"type\":\"card\",\"data\":{\"card_name\":\"Trading\",\"col\":4}},{\"id\":\"ct_hdr_ml\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>ML & AI</b></span>\",\"col\":12}},{\"id\":\"ct_card_ml\",\"type\":\"card\",\"data\":{\"card_name\":\"ML & AI\",\"col\":4}},{\"id\":\"ct_hdr_results\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Results & Reports</b></span>\",\"col\":12}},{\"id\":\"ct_card_results\",\"type\":\"card\",\"data\":{\"card_name\":\"Results\",\"col\":4}},{\"id\":\"ct_hdr_config\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Configuration</b></span>\",\"col\":12}},{\"id\":\"ct_card_config\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuration\",\"col\":4}},{\"id\":\"ct_hdr_shortcuts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Links</b></span>\",\"col\":12}},{\"id\":\"ct_sc_dashboard\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CT Dashboard\",\"col\":3}},{\"id\":\"ct_sc_config\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CT Trading Config\",\"col\":3}},{\"id\":\"ct_sc_positions\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CT Open Position\",\"col\":3}},{\"id\":\"ct_sc_trades\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CT Trade Log\",\"col\":3}}]",
+ "creation": "2025-01-01 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "bitcoin",
+ "idx": 0,
+ "indicator_color": "orange",
+ "is_hidden": 0,
+ "label": "Coin Trader",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trading",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Open Position",
+   "link_count": 0,
+   "link_to": "CT Open Position",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Trade Log",
+   "link_count": 0,
+   "link_to": "CT Trade Log",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT AI Scan Result",
+   "link_count": 0,
+   "link_to": "CT AI Scan Result",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "ML & AI",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT ML Prediction",
+   "link_count": 0,
+   "link_to": "CT ML Prediction",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT AI Provider",
+   "link_count": 0,
+   "link_to": "CT AI Provider",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Results",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Backtest Result",
+   "link_count": 0,
+   "link_to": "CT Backtest Result",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Daily Summary",
+   "link_count": 0,
+   "link_to": "CT Daily Summary",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Future Order",
+   "link_count": 0,
+   "link_to": "CT Future Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Configuration",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Trading Config",
+   "link_count": 0,
+   "link_to": "CT Trading Config",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Exchange Credential",
+   "link_count": 0,
+   "link_to": "CT Exchange Credential",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CT Notification Config",
+   "link_count": 0,
+   "link_to": "CT Notification Config",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "Coin Trader",
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "restrict_to_domain": "",
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Orange",
+   "format": "{} Open",
+   "label": "CT Dashboard",
+   "link_to": "/ct-dashboard",
+   "stats_filter": "",
+   "type": "URL"
+  },
+  {
+   "color": "Yellow",
+   "label": "CT Trading Config",
+   "link_to": "CT Trading Config",
+   "stats_filter": "",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "format": "{} Open",
+   "label": "CT Open Position",
+   "link_to": "CT Open Position",
+   "stats_filter": "{\"status\": \"Open\"}",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "label": "CT Trade Log",
+   "link_to": "CT Trade Log",
+   "stats_filter": "",
+   "type": "DocType"
+  }
+ ],
+ "title": "Coin Trader"
+}

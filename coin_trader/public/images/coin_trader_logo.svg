@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Dark background circle -->
+  <circle cx="60" cy="60" r="60" fill="#0f1117"/>
+
+  <!-- Amber/gold outer ring -->
+  <circle cx="60" cy="60" r="54" stroke="#f39c12" stroke-width="3" fill="none"/>
+
+  <!-- Candlestick chart bars (stylised) -->
+  <!-- Bar 1 (bearish) -->
+  <rect x="20" y="48" width="8" height="28" rx="2" fill="#ef4444" opacity="0.85"/>
+  <line x1="24" y1="40" x2="24" y2="48" stroke="#ef4444" stroke-width="2"/>
+  <line x1="24" y1="76" x2="24" y2="84" stroke="#ef4444" stroke-width="2"/>
+
+  <!-- Bar 2 (bullish) -->
+  <rect x="34" y="42" width="8" height="22" rx="2" fill="#22c55e" opacity="0.85"/>
+  <line x1="38" y1="34" x2="38" y2="42" stroke="#22c55e" stroke-width="2"/>
+  <line x1="38" y1="64" x2="38" y2="72" stroke="#22c55e" stroke-width="2"/>
+
+  <!-- Bar 3 (bullish) -->
+  <rect x="48" y="35" width="8" height="32" rx="2" fill="#22c55e"/>
+  <line x1="52" y1="26" x2="52" y2="35" stroke="#22c55e" stroke-width="2"/>
+  <line x1="52" y1="67" x2="52" y2="76" stroke="#22c55e" stroke-width="2"/>
+
+  <!-- Bar 4 (bearish small) -->
+  <rect x="62" y="38" width="8" height="18" rx="2" fill="#ef4444" opacity="0.85"/>
+  <line x1="66" y1="31" x2="66" y2="38" stroke="#ef4444" stroke-width="2"/>
+  <line x1="66" y1="56" x2="66" y2="62" stroke="#ef4444" stroke-width="2"/>
+
+  <!-- Bar 5 (bullish strong) -->
+  <rect x="76" y="28" width="8" height="38" rx="2" fill="#22c55e"/>
+  <line x1="80" y1="20" x2="80" y2="28" stroke="#22c55e" stroke-width="2"/>
+  <line x1="80" y1="66" x2="80" y2="75" stroke="#22c55e" stroke-width="2"/>
+
+  <!-- Trend arrow overlay -->
+  <polyline points="20,80 38,65 52,52 66,58 80,36" stroke="#f39c12" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="80,36 86,44 74,44" fill="#f39c12"/>
+
+  <!-- Bottom label -->
+  <text x="60" y="105" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="700" fill="#f39c12" letter-spacing="2">COIN TRADER</text>
+</svg>

@@ -1,0 +1,147 @@
+{
+ "actions": [],
+ "autoname": "format:CTML-{symbol}-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "symbol",
+  "prediction_time",
+  "column_break_1",
+  "prediction",
+  "confidence_level",
+  "model_version",
+  "section_break_prob",
+  "upward_probability",
+  "downward_probability",
+  "expected_move_pct",
+  "column_break_2",
+  "confidence_score",
+  "section_break_features",
+  "features_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "prediction_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Prediction Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "prediction",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Prediction",
+   "options": "BUY\nSELL\nHOLD",
+   "reqd": 1
+  },
+  {
+   "fieldname": "confidence_level",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Confidence Level",
+   "options": "Very High\nHigh\nMedium\nWeak\nIgnore",
+   "reqd": 1
+  },
+  {
+   "fieldname": "model_version",
+   "fieldtype": "Data",
+   "label": "Model Version"
+  },
+  {
+   "fieldname": "section_break_prob",
+   "fieldtype": "Section Break",
+   "label": "Probability Analysis"
+  },
+  {
+   "fieldname": "upward_probability",
+   "fieldtype": "Float",
+   "label": "Upward Probability (%)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "downward_probability",
+   "fieldtype": "Float",
+   "label": "Downward Probability (%)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expected_move_pct",
+   "fieldtype": "Float",
+   "label": "Expected Move (%)"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "confidence_score",
+   "fieldtype": "Int",
+   "label": "Confidence Score (0-100)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_features",
+   "fieldtype": "Section Break",
+   "label": "Feature Snapshot"
+  },
+  {
+   "fieldname": "features_json",
+   "fieldtype": "Long Text",
+   "label": "Features JSON"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT ML Prediction",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0
+  }
+ ],
+ "sort_field": "prediction_time",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

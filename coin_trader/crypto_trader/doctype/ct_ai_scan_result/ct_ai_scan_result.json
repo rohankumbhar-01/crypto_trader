@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "autoname": "format:CTAI-SCAN-{symbol}-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "symbol",
+  "signal",
+  "confidence",
+  "column_break_1",
+  "price",
+  "target_price",
+  "stop_loss",
+  "provider_used",
+  "section_break_reason",
+  "reason",
+  "section_break_cost",
+  "tokens_used",
+  "ai_cost_usd"
+ ],
+ "fields": [
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Symbol",
+   "reqd": 1
+  },
+  {
+   "fieldname": "signal",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Signal",
+   "options": "BUY\nSELL\nHOLD\nNO TRADE",
+   "reqd": 1
+  },
+  {
+   "fieldname": "confidence",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "AI Confidence (%)"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "target_price",
+   "fieldtype": "Currency",
+   "label": "Target Price (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "stop_loss",
+   "fieldtype": "Currency",
+   "label": "Stop Loss (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "provider_used",
+   "fieldtype": "Data",
+   "label": "AI Provider Used"
+  },
+  {
+   "fieldname": "section_break_reason",
+   "fieldtype": "Section Break",
+   "label": "AI Reasoning"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Long Text",
+   "label": "Reason"
+  },
+  {
+   "fieldname": "section_break_cost",
+   "fieldtype": "Section Break",
+   "label": "API Usage"
+  },
+  {
+   "fieldname": "tokens_used",
+   "fieldtype": "Int",
+   "label": "Tokens Used"
+  },
+  {
+   "fieldname": "ai_cost_usd",
+   "fieldtype": "Currency",
+   "label": "AI Cost (USD)",
+   "options": "USD"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT AI Scan Result",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

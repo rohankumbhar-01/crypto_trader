@@ -1,0 +1,153 @@
+{
+ "actions": [],
+ "autoname": "format:CTDAY-{user}-{date}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "date",
+  "column_break_1",
+  "total_trades",
+  "winning_trades",
+  "losing_trades",
+  "section_break_pnl",
+  "gross_pnl_inr",
+  "net_pnl_inr",
+  "column_break_2",
+  "win_rate_pct",
+  "scans_run",
+  "section_break_cost",
+  "ai_cost_usd",
+  "ml_predictions_made",
+  "is_paper"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_trades",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Trades",
+   "default": 0
+  },
+  {
+   "fieldname": "winning_trades",
+   "fieldtype": "Int",
+   "label": "Winning Trades",
+   "default": 0
+  },
+  {
+   "fieldname": "losing_trades",
+   "fieldtype": "Int",
+   "label": "Losing Trades",
+   "default": 0
+  },
+  {
+   "fieldname": "section_break_pnl",
+   "fieldtype": "Section Break",
+   "label": "P&L Summary"
+  },
+  {
+   "fieldname": "gross_pnl_inr",
+   "fieldtype": "Currency",
+   "label": "Gross P&L (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "net_pnl_inr",
+   "fieldtype": "Currency",
+   "label": "Net P&L after AI Cost (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "win_rate_pct",
+   "fieldtype": "Float",
+   "label": "Win Rate (%)"
+  },
+  {
+   "fieldname": "scans_run",
+   "fieldtype": "Int",
+   "label": "AI Scans Run",
+   "default": 0
+  },
+  {
+   "fieldname": "section_break_cost",
+   "fieldtype": "Section Break",
+   "label": "System Usage"
+  },
+  {
+   "fieldname": "ai_cost_usd",
+   "fieldtype": "Currency",
+   "label": "AI Cost (USD)",
+   "options": "USD"
+  },
+  {
+   "fieldname": "ml_predictions_made",
+   "fieldtype": "Int",
+   "label": "ML Predictions Made",
+   "default": 0
+  },
+  {
+   "fieldname": "is_paper",
+   "fieldtype": "Check",
+   "label": "Paper Trading Day",
+   "default": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Daily Summary",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "date",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

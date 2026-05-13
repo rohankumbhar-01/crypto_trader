@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "autoname": "format:CTBT-{strategy_name}-{#####}",
+ "creation": "2026-05-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "strategy_name",
+  "tested_from",
+  "tested_to",
+  "column_break_1",
+  "total_trades",
+  "win_rate",
+  "profit_factor",
+  "section_break_metrics",
+  "max_drawdown",
+  "sharpe_ratio",
+  "net_profit",
+  "column_break_2",
+  "avg_win_pct",
+  "avg_loss_pct",
+  "section_break_notes",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "strategy_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Strategy Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tested_from",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Tested From",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tested_to",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Tested To",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_trades",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Trades"
+  },
+  {
+   "fieldname": "win_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Win Rate (%)"
+  },
+  {
+   "fieldname": "profit_factor",
+   "fieldtype": "Float",
+   "label": "Profit Factor"
+  },
+  {
+   "fieldname": "section_break_metrics",
+   "fieldtype": "Section Break",
+   "label": "Performance Metrics"
+  },
+  {
+   "fieldname": "max_drawdown",
+   "fieldtype": "Float",
+   "label": "Max Drawdown (%)"
+  },
+  {
+   "fieldname": "sharpe_ratio",
+   "fieldtype": "Float",
+   "label": "Sharpe Ratio"
+  },
+  {
+   "fieldname": "net_profit",
+   "fieldtype": "Currency",
+   "label": "Net Profit (INR)",
+   "options": "INR"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "avg_win_pct",
+   "fieldtype": "Float",
+   "label": "Avg Win (%)"
+  },
+  {
+   "fieldname": "avg_loss_pct",
+   "fieldtype": "Float",
+   "label": "Avg Loss (%)"
+  },
+  {
+   "fieldname": "section_break_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Long Text",
+   "label": "Notes"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Backtest Result",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Trader",
+   "write": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}
