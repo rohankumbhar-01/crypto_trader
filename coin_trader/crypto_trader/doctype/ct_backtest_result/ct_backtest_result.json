@@ -35,15 +35,13 @@
    "fieldname": "tested_from",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Tested From",
-   "reqd": 1
+   "label": "Tested From"
   },
   {
    "fieldname": "tested_to",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Tested To",
-   "reqd": 1
+   "label": "Tested To"
   },
   {
    "fieldname": "column_break_1",

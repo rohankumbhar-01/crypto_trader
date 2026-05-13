@@ -70,7 +70,8 @@ def run_backtest(
     # 2. Build indicator DataFrame
     df = candles_to_dataframe(candles)
     df = compute_indicators(df)
-    df = df.dropna().reset_index(drop=True)
+    df = df.dropna().reset_index()   # keep DatetimeIndex as column "time"
+    df = df.reset_index(drop=True)
 
     if len(df) < 220:
         return {
@@ -78,15 +79,13 @@ def run_backtest(
             "error":   f"After indicator warmup only {len(df)} candles remain — need 220+",
         }
 
-    from_date = str(df.index[0])   if hasattr(df.index[0],  "date") else str(df.iloc[0].get("datetime",  ""))
-    to_date   = str(df.index[-1])  if hasattr(df.index[-1], "date") else str(df.iloc[-1].get("datetime", ""))
-
-    # Use DatetimeIndex if available
+    # Extract dates from the preserved "time" column (UTC Timestamp → date string)
     try:
-        from_date = df.index[0].date().isoformat()
-        to_date   = df.index[-1].date().isoformat()
+        from_date = str(df["time"].iloc[0].date())
+        to_date   = str(df["time"].iloc[-1].date())
     except Exception:
-        pass
+        from_date = now_datetime().date().isoformat()
+        to_date   = now_datetime().date().isoformat()
 
     # 3. Walk-forward replay
     result = _run_walk_forward(
