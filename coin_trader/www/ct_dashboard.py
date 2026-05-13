@@ -15,13 +15,17 @@ def get_context(context):
     context.no_cache = 1
     context.title = "Coin Trader Dashboard"
 
-    # Safe defaults — guaranteed to be set before any DB call
+    # Safe defaults
     context.config               = {}
     context.is_active            = False
     context.dry_run              = True
     context.interval             = "1h"
     context.min_conf             = 80
     context.symbols              = []
+    context.max_positions        = 5
+    context.target_pct           = 1.5
+    context.sl_pct               = 0.8
+    context.ai_provider          = "Claude"
     context.open_positions_count = 0
     context.today_pnl            = 0.0
     context.model_trained        = False
@@ -34,12 +38,15 @@ def get_context(context):
         )
         if cfg_name:
             cfg = frappe.get_doc("CT Trading Config", cfg_name).as_dict()
-            context.config    = cfg
-            context.is_active = True
-            context.dry_run   = bool(cfg.get("dry_run", 1))
-            context.interval  = cfg.get("candle_interval") or "1h"
-            context.min_conf  = cint(cfg.get("min_confidence_pct", 80))
-            context.symbols   = frappe.get_all(
+            context.config        = cfg
+            context.is_active     = True
+            context.dry_run       = bool(cfg.get("dry_run", 1))
+            context.interval      = cfg.get("candle_interval") or "1h"
+            context.min_conf      = cint(cfg.get("min_confidence_pct", 80))
+            context.max_positions = cint(cfg.get("max_positions", 5))
+            context.target_pct    = flt(cfg.get("stop_loss_pct", 1.5))
+            context.sl_pct        = flt(cfg.get("stop_loss_pct", 0.8))
+            context.symbols       = frappe.get_all(
                 "CT Trading Symbol",
                 filters={"parent": cfg_name, "enabled": 1},
                 fields=["symbol"],
@@ -57,7 +64,7 @@ def get_context(context):
         frappe.log_error(title="ct-dashboard: position count failed", message=str(e))
 
     try:
-        today = now_datetime().date().isoformat()
+        today   = now_datetime().date().isoformat()
         pnl_row = frappe.db.sql(
             "SELECT COALESCE(SUM(pnl_inr),0) FROM `tabCT Trade Log` "
             "WHERE user=%s AND DATE(trade_time)=%s",
@@ -72,3 +79,10 @@ def get_context(context):
         context.model_trained = model_exists(user)
     except Exception as e:
         frappe.log_error(title="ct-dashboard: model_exists failed", message=str(e))
+
+    try:
+        ai = frappe.db.get_value("CT AI Provider", {"is_active": 1}, "provider")
+        if ai:
+            context.ai_provider = ai.title()
+    except Exception:
+        pass
