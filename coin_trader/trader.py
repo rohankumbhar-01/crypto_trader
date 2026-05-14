@@ -34,7 +34,7 @@ from frappe import _
 from frappe.utils import flt, cint, now_datetime, get_datetime
 
 from coin_trader.risk_engine import update_trailing_stoploss, check_exit
-from coin_trader import notifier
+from coin_trader import notifier, outbound_webhook
 
 
 # ---------------------------------------------------------------------------
@@ -124,6 +124,10 @@ def open_position(user: str, signal: dict, risk_decision: dict) -> dict:
         )
         try:
             notifier.notify_position_opened(user, symbol, fill_price, qty, target, stoploss, dry_run)
+        except Exception:
+            pass
+        try:
+            outbound_webhook.on_position_opened(user, symbol, fill_price, qty, target, stoploss, dry_run)
         except Exception:
             pass
         # Store action in returned dict for downstream use (not a DocType field)
@@ -221,10 +225,13 @@ def close_position(position: dict, exit_price: float, exit_reason: str) -> bool:
             reason_lower = (exit_reason or "").lower()
             if "stop" in reason_lower or "stoploss" in reason_lower:
                 notifier.notify_stoploss_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
+                outbound_webhook.on_stoploss_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
             elif "target" in reason_lower:
                 notifier.notify_target_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
+                outbound_webhook.on_target_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
             else:
                 notifier.notify_position_closed(user, symbol, pnl, pnl_pct, exit_reason, dry_run)
+                outbound_webhook.on_position_closed(user, symbol, pnl, pnl_pct, exit_reason, exit_price, dry_run)
         except Exception:
             pass
         return True
