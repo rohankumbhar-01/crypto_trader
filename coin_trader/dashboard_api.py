@@ -107,7 +107,33 @@ def _fetch_ticker_cached():
 
 @frappe.whitelist()
 def get_market_ticker():
-    """Return cached CoinDCX ticker (full array)."""
+    """Return ticker array. Uses Binance if user has Binance credential, else CoinDCX."""
+    user = frappe.session.user
+    try:
+        from coin_trader.exchange import get_active_exchange
+        if get_active_exchange(user) == "Binance":
+            from coin_trader.exchange_binance import get_ticker as bnb_ticker, _get_usdt_inr_rate
+            bnb_data = bnb_ticker() or []
+            rate = _get_usdt_inr_rate()
+            out = []
+            for t in bnb_data:
+                sym = t.get("symbol", "")
+                if sym.endswith("USDT"):
+                    base = sym[:-4]
+                    inr_price = round(flt(t.get("lastPrice", 0)) * rate, 4)
+                    out.append({
+                        "market":         base + "INR",
+                        "last_price":     inr_price,
+                        "high":           round(flt(t.get("highPrice", 0)) * rate, 4),
+                        "low":            round(flt(t.get("lowPrice", 0)) * rate, 4),
+                        "volume":         flt(t.get("volume", 0)),
+                        "bid":            round(flt(t.get("bidPrice", 0)) * rate, 4),
+                        "ask":            round(flt(t.get("askPrice", 0)) * rate, 4),
+                        "change_24_hour": flt(t.get("priceChangePercent", 0)),
+                    })
+            return out
+    except Exception:
+        pass
     return _fetch_ticker_cached()
 
 
@@ -117,9 +143,30 @@ def get_market_ticker():
 
 @frappe.whitelist()
 def get_orderbook(pair):
-    """Return order book for a single pair. pair must already be normalised (B-BTC_INR)."""
+    """Return order book for a single pair. Routes to Binance or CoinDCX based on active credential."""
     if not pair:
         return {"bids": [], "asks": []}
+
+    user = frappe.session.user
+    try:
+        from coin_trader.exchange import get_active_exchange
+        if get_active_exchange(user) == "Binance":
+            from coin_trader.exchange_binance import get_orderbook as bnb_ob, _get_usdt_inr_rate
+            sym = pair.strip().upper()
+            # Strip CDX pair notation if passed
+            if "-" in sym and "_" in sym:
+                sym = sym.split("-", 1)[1].replace("_", "")
+            is_inr = sym.endswith("INR")
+            bnb_sym = sym[:-3] + "USDT" if is_inr else sym
+            ob = bnb_ob(bnb_sym)
+            if is_inr:
+                rate = _get_usdt_inr_rate()
+                ob["bids"] = [[round(p * rate, 4), q] for p, q in ob.get("bids", [])]
+                ob["asks"] = [[round(p * rate, 4), q] for p, q in ob.get("asks", [])]
+            return ob
+    except Exception:
+        pass  # Fall through to CoinDCX
+
     pair = _norm_pair(pair)
     now_t = time.time()
     entry = _CACHE["orderbook"].get(pair)
@@ -182,13 +229,27 @@ def _get_usdt_inr_rate():
 def get_candles_data(symbol, interval="1h", limit=200):
     """Return candle data formatted for lightweight-charts.
 
-    INR pairs use I- prefix (I-BTC_INR), USDT pairs use B- prefix (B-BTC_USDT).
-    _norm_pair handles this automatically.
+    Routes to Binance or CoinDCX based on user's active credential.
+    INR pairs: returned in INR in both cases (Binance converts via USDT/INR rate).
     """
+    user  = frappe.session.user
     iv    = _INTERVAL_MAP.get(interval, "1h")
     limit = cint(limit) or 200
-    pair  = _norm_pair(symbol)
 
+    # Try Binance path first if user has active Binance credential
+    try:
+        from coin_trader.exchange import get_active_exchange
+        if get_active_exchange(user) == "Binance":
+            from coin_trader.exchange_binance import get_candles_inr, get_candles
+            # For INR symbols use INR-converted candles; for USDT symbols use raw
+            if str(symbol).upper().endswith("INR"):
+                return get_candles_inr(symbol, interval=iv, limit=limit)
+            else:
+                return get_candles(symbol, interval=iv, limit=limit)
+    except Exception:
+        pass  # Fall through to CoinDCX
+
+    pair  = _norm_pair(symbol)
     data = _http_get(f"{_CDX_CANDLES}?pair={pair}&interval={iv}&limit={limit}")
     if not data or not isinstance(data, list):
         return []
@@ -266,10 +327,10 @@ def get_snapshot():
             pluck="symbol",
         )
 
-    # INR balance — via exchange.get_inr_balance (may fail if no creds; default 0)
+    # INR balance — routed to CoinDCX or Binance based on active credential
     try:
-        from coin_trader.exchange import get_inr_balance
-        snap["inr_balance"] = flt(get_inr_balance(user))
+        from coin_trader.exchange import get_inr_balance_routed
+        snap["inr_balance"] = flt(get_inr_balance_routed(user))
     except Exception:
         snap["inr_balance"] = 0.0
 
@@ -334,23 +395,59 @@ def get_snapshot():
 
     # Market ticker for tracked symbols only (smaller payload)
     try:
-        ticker_data = _fetch_ticker_cached() or []
-        tracked_keys = {_norm_market_key(s) for s in snap["tracked_symbols"]}
-        for t in ticker_data:
-            mkt = t.get("market")
-            if mkt in tracked_keys:
-                snap["market"][mkt] = {
-                    "last_price":      flt(t.get("last_price", 0)),
-                    "high":            flt(t.get("high", 0)),
-                    "low":             flt(t.get("low", 0)),
-                    "volume":          flt(t.get("volume", 0)),
-                    "bid":             flt(t.get("bid", 0)),
-                    "ask":             flt(t.get("ask", 0)),
-                    "change_24_hour":  flt(t.get("change_24_hour", 0)),
-                    "timestamp":       t.get("timestamp"),
-                }
+        from coin_trader.exchange import get_active_exchange
+        active_exchange = get_active_exchange(user)
     except Exception:
-        pass
+        active_exchange = "CoinDCX"
+
+    if active_exchange == "Binance" and snap["tracked_symbols"]:
+        try:
+            from coin_trader.exchange_binance import get_ticker as bnb_ticker, _get_usdt_inr_rate
+            bnb_data = bnb_ticker() or []
+            inr_rate = _get_usdt_inr_rate()
+            # Build lookup: BTCUSDT -> ticker entry
+            bnb_map = {t.get("symbol", ""): t for t in bnb_data}
+            for sym in snap["tracked_symbols"]:
+                s = sym.strip().upper()
+                # Map INR symbols to USDT equivalent for Binance
+                if s.endswith("INR"):
+                    bnb_sym = s[:-3] + "USDT"
+                else:
+                    bnb_sym = s
+                t = bnb_map.get(bnb_sym)
+                if t:
+                    last_usdt = flt(t.get("lastPrice", 0))
+                    snap["market"][s] = {
+                        "last_price":     round(last_usdt * inr_rate, 4) if s.endswith("INR") else last_usdt,
+                        "high":           round(flt(t.get("highPrice", 0)) * inr_rate, 4) if s.endswith("INR") else flt(t.get("highPrice", 0)),
+                        "low":            round(flt(t.get("lowPrice", 0)) * inr_rate, 4) if s.endswith("INR") else flt(t.get("lowPrice", 0)),
+                        "volume":         flt(t.get("volume", 0)),
+                        "bid":            round(flt(t.get("bidPrice", 0)) * inr_rate, 4) if s.endswith("INR") else flt(t.get("bidPrice", 0)),
+                        "ask":            round(flt(t.get("askPrice", 0)) * inr_rate, 4) if s.endswith("INR") else flt(t.get("askPrice", 0)),
+                        "change_24_hour": flt(t.get("priceChangePercent", 0)),
+                        "timestamp":      None,
+                    }
+        except Exception as e:
+            frappe.log_error(title="snapshot: Binance ticker", message=str(e))
+    else:
+        try:
+            ticker_data = _fetch_ticker_cached() or []
+            tracked_keys = {_norm_market_key(s) for s in snap["tracked_symbols"]}
+            for t in ticker_data:
+                mkt = t.get("market")
+                if mkt in tracked_keys:
+                    snap["market"][mkt] = {
+                        "last_price":      flt(t.get("last_price", 0)),
+                        "high":            flt(t.get("high", 0)),
+                        "low":             flt(t.get("low", 0)),
+                        "volume":          flt(t.get("volume", 0)),
+                        "bid":             flt(t.get("bid", 0)),
+                        "ask":             flt(t.get("ask", 0)),
+                        "change_24_hour":  flt(t.get("change_24_hour", 0)),
+                        "timestamp":       t.get("timestamp"),
+                    }
+        except Exception:
+            pass
 
     # Active AI provider
     try:

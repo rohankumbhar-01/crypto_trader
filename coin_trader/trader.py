@@ -86,12 +86,11 @@ def open_position(user: str, signal: dict, risk_decision: dict) -> dict:
 
     if not dry_run:
         try:
-            from coin_trader.exchange import place_order, symbol_to_pair
-            pair = symbol_to_pair(symbol)
+            from coin_trader.exchange import place_order_routed
             side = "buy" if action == "BUY" else "sell"
-            resp = place_order(
-                user=user, market=pair, side=side,
-                order_type="market_order", quantity=qty, price=None,
+            resp = place_order_routed(
+                user=user, symbol=symbol, side=side,
+                order_type="market_order", quantity=qty,
             )
             exchange_order_id = resp.get("id", "")
             fill_price        = flt(resp.get("avg_price") or price)
@@ -162,12 +161,11 @@ def close_position(position: dict, exit_price: float, exit_reason: str) -> bool:
 
     if not dry_run:
         try:
-            from coin_trader.exchange import place_order, symbol_to_pair
-            pair = symbol_to_pair(symbol)
+            from coin_trader.exchange import place_order_routed
             side = "sell" if action == "BUY" else "buy"
-            resp = place_order(
-                user=user, market=pair, side=side,
-                order_type="market_order", quantity=qty, price=None,
+            resp = place_order_routed(
+                user=user, symbol=symbol, side=side,
+                order_type="market_order", quantity=qty,
             )
             exit_price = flt(resp.get("avg_price") or exit_price)
         except Exception as e:
@@ -312,10 +310,10 @@ def execute_signal(user: str, signal: dict) -> dict:
     Full pipeline: risk evaluate → open position (if approved).
     """
     from coin_trader.risk_engine import evaluate
-    from coin_trader.exchange import get_inr_balance
+    from coin_trader.exchange import get_inr_balance_routed
 
     try:
-        inr_balance = flt(get_inr_balance(user))
+        inr_balance = flt(get_inr_balance_routed(user))
     except Exception as e:
         frappe.log_error(title="Trader: get_inr_balance failed", message=str(e))
         inr_balance = 0.0

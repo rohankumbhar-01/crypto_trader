@@ -359,6 +359,83 @@ def get_trade_history_auth(
 
 
 # ---------------------------------------------------------------------------
+# Exchange router — dispatches to CoinDCX or Binance based on active cred
+# ---------------------------------------------------------------------------
+
+def get_active_exchange(user: str) -> str:
+	"""Return 'Binance' or 'CoinDCX' based on the user's active credential."""
+	exchange = frappe.db.get_value(
+		"CT Exchange Credential",
+		{"user": user, "is_active": 1},
+		"exchange",
+	)
+	return (exchange or "CoinDCX").strip()
+
+
+def get_inr_balance_routed(user: str) -> float:
+	"""Return available balance in INR (CoinDCX) or USDT→INR equivalent (Binance)."""
+	if get_active_exchange(user) == "Binance":
+		from coin_trader.exchange_binance import get_inr_equivalent_balance
+		return get_inr_equivalent_balance(user)
+	return get_inr_balance(user)
+
+
+def place_order_routed(
+	user: str,
+	symbol: str,
+	side: str,
+	order_type: str = "market_order",
+	quantity: float = None,
+	price: float = None,
+	quote_order_qty: float = None,
+) -> dict:
+	"""
+	Place a spot order on whichever exchange the user has configured.
+	Returns a normalised dict: {id, status, symbol, side, avg_price, quantity}
+	"""
+	if get_active_exchange(user) == "Binance":
+		from coin_trader.exchange_binance import place_order as bnb_place_order
+		bnb_type = "LIMIT" if order_type == "limit_order" else "MARKET"
+		return bnb_place_order(
+			user=user,
+			symbol=symbol,
+			side=side.upper(),
+			order_type=bnb_type,
+			quantity=quantity,
+			quote_order_qty=quote_order_qty,
+			price=price,
+		)
+	# CoinDCX path — normalise side to lowercase
+	cdx_market = symbol_to_pair(symbol) if not symbol.startswith(("I-", "B-")) else symbol
+	resp = place_order(
+		user=user,
+		market=cdx_market,
+		side=side.lower(),
+		order_type=order_type,
+		quantity=quantity,
+		price=price,
+	)
+	# Normalise CoinDCX response to the same shape as Binance adapter
+	return {
+		"id":        resp.get("id", ""),
+		"status":    resp.get("status", ""),
+		"symbol":    symbol,
+		"side":      side,
+		"avg_price": flt(resp.get("avg_price") or resp.get("price_per_unit", 0)),
+		"quantity":  flt(resp.get("total_quantity", quantity)),
+		"raw":       resp,
+	}
+
+
+def verify_credential_routed(user: str) -> dict:
+	"""Test credential for whichever exchange is active."""
+	if get_active_exchange(user) == "Binance":
+		from coin_trader.exchange_binance import verify_credential as bnb_verify
+		return bnb_verify(user)
+	return verify_credential(user)
+
+
+# ---------------------------------------------------------------------------
 # Whitelisted API — called from JS / other Frappe contexts
 # ---------------------------------------------------------------------------
 
@@ -368,4 +445,4 @@ def verify_exchange_credential(user: str | None = None) -> dict:
 	user = user or frappe.session.user
 	if frappe.session.user != user and "System Manager" not in frappe.get_roles(frappe.session.user):
 		frappe.throw(_("Not permitted."), frappe.PermissionError)
-	return verify_credential(user)
+	return verify_credential_routed(user)
