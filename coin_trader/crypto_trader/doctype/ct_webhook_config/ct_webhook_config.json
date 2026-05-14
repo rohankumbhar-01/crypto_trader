@@ -1,0 +1,185 @@
+{
+ "actions": [],
+ "autoname": "format:CTWH-{user}-{#####}",
+ "creation": "2026-05-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "is_active",
+  "column_break_1",
+  "secret_token",
+  "section_break_inbound",
+  "inbound_enabled",
+  "inbound_info",
+  "section_break_outbound",
+  "outbound_url",
+  "outbound_enabled",
+  "section_break_events",
+  "on_position_opened",
+  "on_position_closed",
+  "on_stoploss_hit",
+  "on_target_hit",
+  "on_scan_complete",
+  "on_daily_summary",
+  "section_break_status",
+  "last_inbound_at",
+  "last_outbound_at",
+  "last_outbound_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active",
+   "default": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "secret_token",
+   "fieldtype": "Password",
+   "label": "Secret Token",
+   "description": "Include this as X-CT-Token header or ?token= in inbound webhook requests"
+  },
+  {
+   "fieldname": "section_break_inbound",
+   "fieldtype": "Section Break",
+   "label": "Inbound Webhook (Receive Signals)"
+  },
+  {
+   "fieldname": "inbound_enabled",
+   "fieldtype": "Check",
+   "label": "Enable Inbound Webhook",
+   "default": 1
+  },
+  {
+   "fieldname": "inbound_info",
+   "fieldtype": "Small Text",
+   "label": "Inbound Endpoint",
+   "read_only": 1,
+   "description": "POST to /api/method/coin_trader.webhook_handler.receive with JSON: {symbol, signal, confidence, user}"
+  },
+  {
+   "fieldname": "section_break_outbound",
+   "fieldtype": "Section Break",
+   "label": "Outbound Webhook (Send Events)"
+  },
+  {
+   "fieldname": "outbound_url",
+   "fieldtype": "Data",
+   "label": "Outbound URL",
+   "description": "URL to POST trade events to (TradingView alert webhook, n8n, Zapier, custom endpoint)"
+  },
+  {
+   "fieldname": "outbound_enabled",
+   "fieldtype": "Check",
+   "label": "Enable Outbound Webhook",
+   "default": 1
+  },
+  {
+   "fieldname": "section_break_events",
+   "fieldtype": "Section Break",
+   "label": "Fire Outbound On"
+  },
+  {
+   "fieldname": "on_position_opened",
+   "fieldtype": "Check",
+   "label": "Position Opened",
+   "default": 1
+  },
+  {
+   "fieldname": "on_position_closed",
+   "fieldtype": "Check",
+   "label": "Position Closed",
+   "default": 1
+  },
+  {
+   "fieldname": "on_stoploss_hit",
+   "fieldtype": "Check",
+   "label": "Stop-Loss Hit",
+   "default": 1
+  },
+  {
+   "fieldname": "on_target_hit",
+   "fieldtype": "Check",
+   "label": "Target Hit",
+   "default": 1
+  },
+  {
+   "fieldname": "on_scan_complete",
+   "fieldtype": "Check",
+   "label": "Scan Complete",
+   "default": 0
+  },
+  {
+   "fieldname": "on_daily_summary",
+   "fieldtype": "Check",
+   "label": "Daily Summary",
+   "default": 0
+  },
+  {
+   "fieldname": "section_break_status",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "last_inbound_at",
+   "fieldtype": "Datetime",
+   "label": "Last Inbound At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_outbound_at",
+   "fieldtype": "Datetime",
+   "label": "Last Outbound At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_outbound_status",
+   "fieldtype": "Data",
+   "label": "Last Outbound Status",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Crypto Trader",
+ "name": "CT Webhook Config",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "read": 1,
+   "role": "Trader",
+   "write": 1,
+   "if_owner": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
