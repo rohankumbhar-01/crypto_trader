@@ -359,11 +359,11 @@ def get_trade_history_auth(
 
 
 # ---------------------------------------------------------------------------
-# Exchange router — dispatches to CoinDCX or Binance based on active cred
+# Exchange router — dispatches to CoinDCX, Binance, or WazirX
 # ---------------------------------------------------------------------------
 
 def get_active_exchange(user: str) -> str:
-	"""Return 'Binance' or 'CoinDCX' based on the user's active credential."""
+	"""Return 'Binance', 'WazirX', or 'CoinDCX' based on the user's active credential."""
 	exchange = frappe.db.get_value(
 		"CT Exchange Credential",
 		{"user": user, "is_active": 1},
@@ -373,10 +373,14 @@ def get_active_exchange(user: str) -> str:
 
 
 def get_inr_balance_routed(user: str) -> float:
-	"""Return available balance in INR (CoinDCX) or USDT→INR equivalent (Binance)."""
-	if get_active_exchange(user) == "Binance":
+	"""Return available INR balance, routed to the correct exchange."""
+	exch = get_active_exchange(user)
+	if exch == "Binance":
 		from coin_trader.exchange_binance import get_inr_equivalent_balance
 		return get_inr_equivalent_balance(user)
+	if exch == "WazirX":
+		from coin_trader.exchange_wazirx import get_inr_balance as wzx_inr
+		return wzx_inr(user)
 	return get_inr_balance(user)
 
 
@@ -392,8 +396,12 @@ def place_order_routed(
 	"""
 	Place a spot order on whichever exchange the user has configured.
 	Returns a normalised dict: {id, status, symbol, side, avg_price, quantity}
+
+	WazirX note: no market orders — pass current price for limit-at-market behaviour.
 	"""
-	if get_active_exchange(user) == "Binance":
+	exch = get_active_exchange(user)
+
+	if exch == "Binance":
 		from coin_trader.exchange_binance import place_order as bnb_place_order
 		bnb_type = "LIMIT" if order_type == "limit_order" else "MARKET"
 		return bnb_place_order(
@@ -405,6 +413,20 @@ def place_order_routed(
 			quote_order_qty=quote_order_qty,
 			price=price,
 		)
+
+	if exch == "WazirX":
+		from coin_trader.exchange_wazirx import place_order as wzx_place_order, get_price
+		# If no price given (market order intent), fetch current price
+		fill_price = price or get_price(symbol)
+		return wzx_place_order(
+			user=user,
+			symbol=symbol,
+			side=side,
+			order_type="limit",
+			quantity=quantity,
+			price=fill_price,
+		)
+
 	# CoinDCX path — normalise side to lowercase
 	cdx_market = symbol_to_pair(symbol) if not symbol.startswith(("I-", "B-")) else symbol
 	resp = place_order(
@@ -415,7 +437,6 @@ def place_order_routed(
 		quantity=quantity,
 		price=price,
 	)
-	# Normalise CoinDCX response to the same shape as Binance adapter
 	return {
 		"id":        resp.get("id", ""),
 		"status":    resp.get("status", ""),
@@ -429,9 +450,13 @@ def place_order_routed(
 
 def verify_credential_routed(user: str) -> dict:
 	"""Test credential for whichever exchange is active."""
-	if get_active_exchange(user) == "Binance":
+	exch = get_active_exchange(user)
+	if exch == "Binance":
 		from coin_trader.exchange_binance import verify_credential as bnb_verify
 		return bnb_verify(user)
+	if exch == "WazirX":
+		from coin_trader.exchange_wazirx import verify_credential as wzx_verify
+		return wzx_verify(user)
 	return verify_credential(user)
 
 
