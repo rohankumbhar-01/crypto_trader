@@ -8,6 +8,7 @@ class CTOpenPosition(Document):
 
 def has_permission(doc, ptype, user=None):
 	user = user or frappe.session.user
-	if frappe.has_role("System Manager", user):
+	user_roles = frappe.get_roles(user)
+	if "System Manager" in user_roles or "Administrator" == user:
 		return True
 	return doc.user == user

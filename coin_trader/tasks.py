@@ -30,6 +30,11 @@ def daily_ml_retrain():
 
 
 def generate_daily_summary():
-    """Runs daily — aggregates trade log into CT Daily Summary."""
+    """Runs daily — aggregates trade log into CT Daily Summary and sends notifications."""
     from coin_trader.scanner import generate_daily_summary as _summarise
+    from coin_trader.notifier import notify_all_daily_summary
     _summarise()
+    try:
+        notify_all_daily_summary()
+    except Exception:
+        pass

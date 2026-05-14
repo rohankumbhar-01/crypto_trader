@@ -70,18 +70,22 @@ def _norm_market_key(symbol):
 
 def _norm_pair(symbol):
     """
-    CoinDCX /market_data/* endpoints use pair format "B-BTC_INR".
-    BTCINR -> B-BTC_INR
+    CoinDCX /market_data/* candle endpoints use exchange-prefixed pairs.
+    INR pairs use "I-" prefix:  BTCINR  -> I-BTC_INR
+    USDT/other pairs use "B-":  BTCUSDT -> B-BTC_USDT
     """
     if not symbol:
         return ""
     s = symbol.strip().upper()
+    # Already normalised (has dash and underscore)
     if "-" in s and "_" in s:
         return s
-    # Insert _ before quote currency
+    # Split base from quote currency
     for q in ("USDT", "USDC", "INR", "BTC", "ETH", "BNB", "USD"):
         if s.endswith(q) and len(s) > len(q):
-            return f"B-{s[:-len(q)]}_{q}"
+            base = s[:-len(q)]
+            prefix = "I" if q == "INR" else "B"
+            return f"{prefix}-{base}_{q}"
     return f"B-{s}"
 
 
@@ -165,12 +169,25 @@ _INTERVAL_MAP = {
 }
 
 
+def _get_usdt_inr_rate():
+    """Return cached USDT/INR rate from ticker (fallback 90)."""
+    ticker = _fetch_ticker_cached() or []
+    for t in ticker:
+        if t.get("market") == "USDTINR":
+            return flt(t.get("last_price", 90)) or 90
+    return 90
+
+
 @frappe.whitelist()
 def get_candles_data(symbol, interval="1h", limit=200):
-    """Return candle data formatted for lightweight-charts."""
-    pair  = _norm_pair(symbol)
+    """Return candle data formatted for lightweight-charts.
+
+    INR pairs use I- prefix (I-BTC_INR), USDT pairs use B- prefix (B-BTC_USDT).
+    _norm_pair handles this automatically.
+    """
     iv    = _INTERVAL_MAP.get(interval, "1h")
     limit = cint(limit) or 200
+    pair  = _norm_pair(symbol)
 
     data = _http_get(f"{_CDX_CANDLES}?pair={pair}&interval={iv}&limit={limit}")
     if not data or not isinstance(data, list):
@@ -181,10 +198,10 @@ def get_candles_data(symbol, interval="1h", limit=200):
         try:
             out.append({
                 "time":   int(c["time"] / 1000) if c.get("time", 0) > 1e12 else int(c.get("time", 0)),
-                "open":   flt(c.get("open", 0)),
-                "high":   flt(c.get("high", 0)),
-                "low":    flt(c.get("low", 0)),
-                "close":  flt(c.get("close", 0)),
+                "open":   flt(c.get("open",   0)),
+                "high":   flt(c.get("high",   0)),
+                "low":    flt(c.get("low",    0)),
+                "close":  flt(c.get("close",  0)),
                 "volume": flt(c.get("volume", 0)),
             })
         except Exception:
@@ -208,6 +225,7 @@ def get_snapshot():
     snap = {
         "ts":                 now_datetime().isoformat(),
         "user":               user,
+        "session_user":       user,
         "inr_balance":        0.0,
         "open_positions":     [],
         "open_positions_count": 0,
@@ -224,8 +242,11 @@ def get_snapshot():
         "model_trained":      False,
     }
 
-    # Config
+    # Config — try exact user match first, then Administrator fallback
     cfg_name = frappe.db.get_value("CT Trading Config", {"user": user, "is_active": 1}, "name")
+    if not cfg_name and user != "Administrator":
+        cfg_name = frappe.db.get_value("CT Trading Config", {"user": "Administrator", "is_active": 1}, "name")
+
     if cfg_name:
         cfg = frappe.get_doc("CT Trading Config", cfg_name).as_dict()
         snap["is_active"]  = True

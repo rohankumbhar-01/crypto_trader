@@ -1,295 +1,351 @@
-# Coin Trader
+<div align="center">
 
-**AI + ML Powered CoinDCX Crypto Trading Platform for Frappe v16 / ERPNext**
+<img src="coin_trader/public/images/coin_trader_logo.svg" width="120" alt="Coin Trader Logo"/>
 
-[![Frappe v16](https://img.shields.io/badge/Frappe-v16-orange)](https://frappe.io)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+# 🪙 Coin Trader
 
----
+### Frappe's First AI + ML Powered Crypto Trading Platform
 
-## Overview
+[![Frappe](https://img.shields.io/badge/Built%20on-Frappe%20v16-1f6feb?style=for-the-badge&logo=frappe)](https://frappeframework.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![LightGBM](https://img.shields.io/badge/ML-LightGBM-00b4d8?style=for-the-badge)](https://lightgbm.readthedocs.io)
+[![Claude AI](https://img.shields.io/badge/AI-Claude%20(Anthropic)-f5a623?style=for-the-badge)](https://anthropic.com)
+[![CoinDCX](https://img.shields.io/badge/Exchange-CoinDCX-6c47ff?style=for-the-badge)](https://coindcx.com)
+[![License](https://img.shields.io/badge/License-MIT-10d57b?style=for-the-badge)](LICENSE)
 
-Coin Trader is a full-featured algorithmic crypto trading app built on the Frappe framework. It integrates directly with the **CoinDCX** exchange and combines a custom Machine Learning pipeline with AI-powered signal validation (Claude / OpenAI / Gemini) to automate trade execution with configurable risk management.
+**A fully automated, real-time cryptocurrency trading system built entirely on the Frappe framework.**
+Combines Machine Learning predictions, Claude AI validation, and a live fullscreen dashboard —
+all in one ERPNext-grade application.
 
-```
-Market Data (CoinDCX WebSocket + REST)
-        ↓
- Indicator Engine  (EMA, RSI, ATR, VWAP, Bollinger Bands)
-        ↓
- ML Probability Engine  (Random Forest — walk-forward trained)
-        ↓
- AI Validation Layer  (Claude / OpenAI / Gemini)
-        ↓
- Risk Engine  (Kelly-lite sizing, drawdown guard, cooldown)
-        ↓
- Trade Executor  (live + paper trading)
-        ↓
- Position Monitor  (trailing SL, target exit, real-time PnL)
-```
+[🚀 Features](#-features) · [📊 Dashboard](#-live-dashboard) · [🤖 How It Works](#-how-it-works) · [⚙️ Installation](#️-installation)
 
 ---
 
-## Features
+</div>
 
-| Category | Details |
+## 🌟 Why Coin Trader?
+
+> **This is the first Frappe application in the world that combines blockchain trading, Machine Learning, and Generative AI into a single deployable ERPNext module.**
+
+Built from scratch by a single developer — Rohan Kumbhar — Coin Trader reimagines what's possible on the Frappe framework, taking it far beyond ERP into real-time financial automation.
+
+| What Makes It Unique | Details |
 |---|---|
-| **Exchange** | CoinDCX REST + WebSocket (live order book, real-time prices) |
-| **ML Pipeline** | Walk-forward training, 30+ technical indicator features, Random Forest |
-| **AI Validation** | Claude, OpenAI, Gemini — configurable per signal |
-| **Risk Engine** | Kelly-lite position sizing, daily loss guard, position cap, cooldown, trailing stoploss |
-| **Trading Modes** | Paper trading (dry run) + Live trading |
-| **Backtesting** | Walk-forward backtest with Sharpe ratio, win rate, profit factor, max drawdown |
-| **Dashboard** | Real-time dark-theme web dashboard at `/ct-dashboard` |
-| **Automation** | Frappe scheduler — scan every 15 min, retrain nightly, daily P&L summary |
-| **Notifications** | Telegram + email alerts on trade open/close |
+| 🧠 **Dual AI Engine** | LightGBM ML model + Claude AI working in tandem for every trade decision |
+| 📡 **Real-Time Everything** | Live market data, live P&L, live order book — zero manual refresh |
+| 🔒 **Risk-First Design** | 5-layer risk guard before any trade executes |
+| 📄 **Paper + Live Mode** | Test strategies safely in paper mode before going live with real funds |
+| 🏗️ **Pure Frappe** | No external dashboard — runs natively inside your Frappe/ERPNext instance |
 
 ---
 
-## Requirements
+## 🚀 Features
 
-- Frappe v16
-- Python 3.11+
-- MariaDB 10.6+
-- CoinDCX account with API credentials
-- *(Optional)* Claude / OpenAI / Gemini API key for AI signal validation
+### 📊 Live Fullscreen Dashboard
+- Real-time candlestick price chart powered by TradingView Lightweight Charts
+- Live order book with bid/ask depth bars and spread calculation
+- Scrolling ticker strip with 24h price change for all tracked coins
+- 6-KPI row: INR Balance · Today P&L · Open Positions · Pending Orders · Unrealised P&L · AI Engine
+- Market overview panel with volume, 24h high/low, and flash animations on price updates
+- **Auto-refreshes every 5 seconds** — completely hands-free
 
----
+### 🤖 Machine Learning Engine
+- **LightGBM** gradient boosting model trained daily on real OHLCV candle data
+- **20+ technical indicators**: RSI, MACD, Bollinger Bands, ATR, EMA cross, volume ratios, momentum
+- Walk-forward backtesting with realistic trade simulation and metrics
+- Per-user model — each user trains and owns their own personalized model
+- Configurable confidence threshold (default 80%) — only high-conviction signals trade
 
-## Installation
+### 🧠 Claude AI Validation Layer
+- Every ML signal is independently validated by Claude (Anthropic)
+- AI cross-checks technical patterns against broader market context
+- Returns human-readable reasons: *"RSI oversold at 28, volume spike 3x average — BUY confirmed"*
+- Pluggable: switch between Claude, GPT-4, or disable AI layer entirely
 
-```bash
-# From your bench directory
-bench get-app https://github.com/rohankumbhar-01/crypto_trader.git
+### 🛡️ 5-Layer Risk Engine
+1. **Daily loss limit** — halts all trading if the configured INR loss is breached
+2. **Max open positions** — never over-allocates capital across multiple coins
+3. **Cooldown after loss** — enforces a waiting period to prevent revenge trading
+4. **Consecutive loss guard** — pauses trading after N losses in a row
+5. **Trailing stop-loss** — dynamically moves stop-loss up as price rises to lock in profits
 
-bench --site your-site.com install-app coin_trader
+### 📡 CoinDCX Integration
+- Live market ticker for all INR pairs (BTCINR, ETHINR, SOLINR, etc.)
+- Real-time order book (bid/ask depth) per symbol
+- OHLCV candle data for all timeframes: 5m, 15m, 1h, 4h, 1d
+- Place live market buy/sell orders with quantity calculation
+- Portfolio INR balance sync
+- All API calls proxied server-side — API keys never exposed to the browser
 
-bench --site your-site.com migrate
+### 🔔 Smart Notification System
+- **Telegram Bot** — rich HTML-formatted alerts delivered instantly
+- **Email** — via Frappe's built-in email system
+- Alert events:
+  - 🟢 Position opened (symbol, price, qty, target, stop-loss)
+  - 🛑 Stop-loss hit (exit price, loss amount)
+  - 🎯 Target reached (exit price, profit)
+  - 🔎 Scan complete (BUY/SELL signals with confidence %)
+  - 📊 Daily P&L summary (total P&L, win rate, open positions)
+- **Test button** directly on the config form — verify your Telegram/Email in one click
 
-bench build --app coin_trader
+### 📜 Complete Trade Lifecycle (Fully Automated)
 ```
-
----
-
-## Setup Guide
-
-### 1. Exchange Credentials
-
-Go to **Coin Trader → Configuration → CT Exchange Credential** and create a record:
-
-| Field | Value |
-|---|---|
-| Exchange | CoinDCX |
-| API Key | Your CoinDCX API key |
-| API Secret | Your CoinDCX API secret |
-| User | Your Frappe user |
-
-> Keys are stored using Frappe's encrypted `password` field type.
-
----
-
-### 2. Trading Configuration
-
-Go to **Coin Trader → Configuration → CT Trading Config** and create a config:
-
-| Field | Description | Example |
-|---|---|---|
-| User | Frappe user this config belongs to | `Administrator` |
-| Is Active | Enable this config | ✓ |
-| Dry Run | Paper trading mode — no real orders placed | ✓ *(start here)* |
-| Candle Interval | OHLCV timeframe | `1h` |
-| INR Per Trade | Fixed capital per trade in INR | `5000` |
-| Max Positions | Max concurrent open positions | `5` |
-| Stop Loss % | Risk % of capital per trade (Kelly input) | `1.5` |
-| Max Daily Loss INR | Halt trading if daily loss exceeds this | `2000` |
-| Min Confidence % | Minimum ML confidence required to trade | `80` |
-| Cooldown After Loss (min) | Minimum gap after a losing trade | `30` |
-
-Add symbols in the **Trading Symbols** child table (e.g. `BTCINR`, `ETHINR`, `SOLINR`) and set **Enabled = 1** for each.
-
----
-
-### 3. AI Provider *(optional)*
-
-Go to **Coin Trader → ML & AI → CT AI Provider**:
-
-| Field | Value |
-|---|---|
-| Provider | `claude` / `openai` / `gemini` |
-| API Key | Your provider API key |
-| Model | e.g. `claude-sonnet-4-6` |
-| Is Active | ✓ |
-
-If no active AI provider is configured, the system trades on the ML signal alone.
-
----
-
-### 4. Train the ML Model
-
-The model trains automatically at **2 AM daily**. To train manually:
-
-```bash
-bench --site your-site.com execute coin_trader.ml.train_model.daily_train
+Scheduler (every 15 min)
+  → ML Predict → AI Validate → Risk Check → Execute Order
+  → Monitor Position (every 1 min) → Close on SL/Target
+  → Log Trade → Send Notification → Update Dashboard
 ```
 
-The dashboard header shows a **"MODEL NOT TRAINED"** warning badge until the first training run completes.
+### 🧪 Walk-Forward Backtesting
+- Run realistic backtests on up to 1000 historical candles
+- Metrics: Win Rate, Profit Factor, Sharpe Ratio, Max Drawdown, Expectancy, Avg Hold
+- Per-trade breakdown with entry, exit, duration, and P&L
+- Directly accessible from the AI Signal Probe panel on the live dashboard
 
 ---
 
-## Dashboard
+## 📊 Live Dashboard
 
-Navigate to **`/ct-dashboard`** after logging in.
-
-### Header
-| Element | Description |
-|---|---|
-| PAPER TRADING badge | Shown when Dry Run is active |
-| LIVE badge | Shown when trading with real funds |
-| Open Positions pill | Live count of currently open trades |
-| Today PnL pill | Running realised P&L for today in INR |
-| Run Scan button | Manually trigger a full symbol scan |
-
-### Toolbar
-| Control | Action |
-|---|---|
-| Symbol selector | Pick a crypto pair |
-| Interval selector | `1m` / `5m` / `15m` / `30m` / `1h` / `4h` / `1d` |
-| **Get Signal** | Fetch ML + AI signal for selected symbol |
-| **Run Scan** | Scan all configured symbols and execute approved trades |
-| **Run Backtest** | Walk-forward backtest on the selected symbol |
-
-### Panels
-| Panel | Description |
-|---|---|
-| ML Signal | BUY/SELL/HOLD prediction, confidence bar, SL/target levels, AI reasoning |
-| Open Positions | Live table — buy price, current SL, target, PnL, close button |
-| Latest Scan Results | Full scan output with risk engine approve/reject reasons |
-| Recent Trades | Last 50 trade log entries with action, price, PnL |
-| Backtest Result | Metrics after running a backtest |
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🪙 Coin Trader   AI + ML Trading Platform    ● PAPER   LIVE · 10:50:01 am │
+├──────────┬──────────┬──────────┬──────────┬────────────┬───────────────────┤
+│ INR Bal  │ Today P&L│ Open Pos │ Pending  │ Unrealised │ AI Engine         │
+│ ₹1,007   │   +₹0    │    0     │    0     │    +₹0     │ Claude · 5 coins  │
+├──────────┴──────────┴──────────┴──────────┴────────────┴───────────────────┤
+│  BTCINR ₹77,48,549 ▼1.15%  ETHINR ₹2,19,850 ▼1.29%  DOGEINR ₹11 ▲1.41%  │
+├──────────────────┬─────────────────────────────┬──────────────────────────┤
+│  📈 Market       │  📊 Price Chart  [ETHINR ▾] │  📒 Order Book  ETHINR  │
+│  BTCINR  ₹77.5L  │  ┌───────────────────────┐  │  BID       QTY  ASK QTY │
+│  ETHINR  ₹2.2L   │  │  🕯🕯📈🕯🕯🕯🕯🕯🕯🕯    │  │  2,18,697      2,19,670 │
+│  SOLINR  ₹8,837  │  │   candlestick chart   │  │  2,18,256      2,20,219 │
+│  DOGEINR ₹11     │  │   (1h · 500 candles)  │  │  Spread 0.445%          │
+│  SHIBINR ₹0.0006 │  └───────────────────────┘  │                         │
+├──────────────────┴─────────────────────────────┼──────────────────────────┤
+│  💼 Open Positions                 0 open       │  🤖 AI Signal Probe      │
+│  No open positions                             │  HOLD · 60% confidence   │
+├────────────────────────────────────────────────┴──────────────────────────┤
+│  ⏳ Future Buy Orders  ·  🔎 Latest Scan Results  ·  📜 Recent Trades      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Scheduler Jobs
+## 🤖 How It Works
 
-| Schedule | Job | Description |
-|---|---|---|
-| Every 15 min | `run_scanner` | Scan all symbols, execute approved trades |
-| Every tick | `monitor_positions` | Check SL/target, update trailing stoploss |
-| Daily 2 AM | `daily_ml_retrain` | Retrain ML model on fresh historical data |
-| Daily | `generate_daily_summary` | Write CT Daily Summary with P&L stats |
+```
+Every 15 minutes (Frappe Scheduler):
 
----
-
-## Risk Management
-
-The Risk Engine applies these checks **in order** before placing any trade:
-
-1. **Confidence gate** — rejects if ML confidence < `min_confidence_pct`
-2. **Daily loss guard** — halts if today's realized loss ≥ `max_daily_loss_inr`
-3. **Max open positions** — rejects if open position count ≥ `max_positions`
-4. **Duplicate guard** — rejects if an open position already exists for the symbol
-5. **Cooldown** — rejects if the symbol was traded within `cooldown_after_loss_min` minutes
-6. **Balance check** — rejects if available INR < `inr_per_trade`
-7. **Position sizing** — `qty = (balance × risk_pct%) / |price − stoploss|`, capped at `inr_per_trade`
-
----
-
-## Paper Trading vs Live Trading
-
-| Setting | Dry Run = 1 (Paper) | Dry Run = 0 (Live) |
-|---|---|---|
-| ML + AI signal | ✓ | ✓ |
-| Risk engine | ✓ | ✓ |
-| Order placement | Simulated | Real (CoinDCX API) |
-| P&L | Simulated | Real |
-| Dashboard badge | PAPER TRADING | LIVE |
-
-**Switch to live only after:**
-- Model shows ≥ 60% backtest win rate
-- Signals validated in paper mode for at least 1 week
-- Daily loss limits are set conservatively
-
----
-
-## Backtesting
-
-Walk-forward methodology:
-- Fetches up to 1000 historical candles from CoinDCX
-- Applies the same indicator + ML pipeline used in live trading
-- Simulates one position at a time (no overlapping trades)
-- Exits on stoploss hit, target hit, or 20-candle timeout
-- 200-candle warmup period before first signal is generated
-
-**Output metrics:** Win Rate · Profit Factor · Net Profit % · Max Drawdown % · Sharpe Ratio · Avg Win % · Avg Loss % · Avg Duration · Expectancy %
-
-Results saved to **CT Backtest Result** and displayed in the dashboard.
+  CoinDCX API ──► Candle Data (OHLCV, 1000 bars)
+                        │
+                        ▼
+              ┌──────────────────┐
+              │  Feature Engine  │  RSI, MACD, BB, ATR, EMA, Volume...
+              └────────┬─────────┘
+                       │
+                       ▼
+              ┌──────────────────┐
+              │  LightGBM Model  │  Trained daily · Per-user
+              │  (ML Predict)    │  Outputs: BUY/SELL/HOLD + confidence %
+              └────────┬─────────┘
+                       │  confidence >= 80%?
+                       ▼
+              ┌──────────────────┐
+              │   Claude AI      │  Independent cross-validation
+              │   Validation     │  Human-readable reasoning
+              └────────┬─────────┘
+                       │  approved?
+                       ▼
+              ┌──────────────────┐
+              │   Risk Engine    │  5 guards: loss limit, position cap,
+              │   (5 layers)     │  cooldown, SL, trailing SL
+              └────────┬─────────┘
+                       │  go?
+                       ▼
+              ┌──────────────────┐
+              │  Trade Executor  │  Paper (simulated) or Live (real order)
+              └────────┬─────────┘
+                       │
+                       ▼
+         Position opened → Monitor every 1 min → Close on SL/Target
+                       │
+                       ▼
+         CT Trade Log + Telegram/Email Notification + Dashboard update
+```
 
 ---
 
-## DocTypes Reference
+## 📦 Frappe DocTypes (10 Custom DocTypes)
 
 | DocType | Purpose |
 |---|---|
-| CT Trading Config | Per-user trading parameters + symbol list |
-| CT Exchange Credential | Encrypted CoinDCX API keys |
-| CT Open Position | Currently open trade positions |
-| CT Trade Log | Full trade history (entry + exit) |
-| CT AI Scan Result | Per-symbol ML + AI scan output |
-| CT ML Prediction | Stored ML prediction records |
-| CT AI Provider | AI model config (Claude / OpenAI / Gemini) |
-| CT Backtest Result | Walk-forward backtest metrics |
-| CT Daily Summary | Daily P&L and win/loss statistics |
-| CT Notification Config | Telegram / email alert settings |
-| CT Future Order | Scheduled future order queue |
+| `CT Trading Config` | Per-user trading configuration — symbols, risk params, AI settings |
+| `CT Trading Symbol` | Child table: list of tracked coin symbols per config |
+| `CT Open Position` | Currently open trades with real-time live P&L tracking |
+| `CT Trade Log` | Complete immutable history of every trade (buy + sell) |
+| `CT Future Order` | Pending dip-entry orders waiting for price to drop |
+| `CT Backtest Result` | Walk-forward backtest results with full metrics |
+| `CT Daily Summary` | End-of-day aggregated P&L and trade count |
+| `CT AI Provider` | Claude / GPT-4 API key and model configuration |
+| `CT Exchange Credential` | CoinDCX API key + secret (encrypted via Frappe Password field) |
+| `CT Notification Config` | Telegram bot token + chat ID + email for alerts |
 
 ---
 
-## Project Structure
+## ⚙️ Installation
+
+### Prerequisites
+- Frappe v16 bench (`bench` CLI)
+- Python 3.11+
+- MariaDB / MySQL
+- Redis
+
+### Steps
+
+```bash
+# 1. Get the app
+bench get-app https://github.com/rohankumbhar-01/crypto_trader.git
+
+# 2. Install on your site
+bench --site your-site.com install-app coin_trader
+
+# 3. Run database migrations
+bench --site your-site.com migrate
+
+# 4. Build frontend assets
+bench build --app coin_trader
+
+# 5. Restart
+bench restart
+```
+
+### First-Time Setup (5 minutes)
+
+```
+1. Exchange Credential  →  /desk#Form/CT Exchange Credential/new
+                           Add your CoinDCX API Key + Secret
+
+2. AI Provider          →  /desk#Form/CT AI Provider/new
+                           Add your Anthropic (Claude) API key
+
+3. Trading Config       →  /desk#Form/CT Trading Config/new
+                           Add symbols: BTCINR, ETHINR, SOLINR...
+                           Set risk params. Enable paper mode first!
+
+4. Train Model          →  Click "Train Model" on CT Trading Config
+                           (takes ~30 seconds)
+
+5. Open Dashboard       →  /ct-dashboard
+                           🎉 You're live!
+
+6. Notifications        →  /desk#Form/CT Notification Config/new
+                           Add Telegram bot token + chat ID
+                           Click "Send Test Notification" to verify
+```
+
+---
+
+## 🔧 Key Configuration Parameters
+
+```python
+# CT Trading Config
+candle_interval    = "15m"   # Candle timeframe: 5m, 15m, 1h, 4h, 1d
+min_confidence_pct = 80      # Min ML confidence % to consider trading
+inr_per_trade      = 500     # Capital allocated per trade (INR)
+max_positions      = 2       # Maximum simultaneous open positions
+stop_loss_pct      = 1.0     # Stop-loss trigger (% below entry)
+profit_target_pct  = 2.0     # Take-profit trigger (% above entry)
+max_daily_loss_inr = 1000    # Daily loss circuit breaker (INR)
+cooldown_min       = 30      # Cooldown minutes after a losing trade
+dry_run            = True    # Paper mode — no real orders placed
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 coin_trader/
-├── ai_adapter.py              # AI provider abstraction (Claude/OpenAI/Gemini)
-├── backtest_engine.py         # Backtest API + result persistence
-├── exchange.py                # CoinDCX REST API client
-├── hooks.py                   # Frappe hooks, scheduler, fixtures
-├── market_data.py             # OHLCV fetcher + indicator computation
-├── probability_engine.py      # ML signal scoring engine
-├── risk_engine.py             # Risk checks + position sizing (Kelly-lite)
-├── scanner.py                 # Multi-symbol scan orchestration
-├── startup.py                 # Boot session handler
-├── tasks.py                   # Scheduled task entry points
-├── trader.py                  # Order execution + position monitor
-├── websocket_client.py        # CoinDCX WebSocket price feed
+├── dashboard_api.py          # CoinDCX server-side proxy + snapshot API
+├── scanner.py                # Scheduled scan orchestrator (every 15 min)
+├── trader.py                 # Trade execution engine (paper + live)
+├── notifier.py               # Telegram + Email notification system
+├── exchange.py               # CoinDCX REST API wrapper
+├── risk_engine.py            # 5-layer risk guard system
+├── ai_adapter.py             # Claude / GPT-4 AI validation layer
+├── backtest_engine.py        # Walk-forward backtesting engine
+├── tasks.py                  # Frappe scheduler entry points
+├── hooks.py                  # Frappe app hooks and scheduler config
 ├── ml/
-│   ├── backtesting.py         # Walk-forward backtest core logic
-│   ├── dataset_builder.py     # Training dataset construction
-│   ├── feature_engineering.py # Technical indicator feature set
-│   ├── predict.py             # Model inference wrapper
-│   └── train_model.py         # Model training + disk persistence
-├── crypto_trader/
-│   └── doctype/               # 11 DocType definitions (JSON + Python)
-├── desktop_icon/
-│   └── coin_trader.json       # Frappe desk home icon
-├── workspace_sidebar/
-│   └── coin_trader.json       # Frappe sidebar navigation
+│   ├── features.py           # 20+ technical indicator feature builder
+│   ├── train_model.py        # LightGBM daily training pipeline
+│   └── predict.py            # Model inference + confidence scoring
 ├── public/
-│   ├── css/ct_dashboard.css   # Dark-theme dashboard styles
-│   ├── js/ct_dashboard.js     # Dashboard JS (signals, positions, scan)
-│   └── images/coin_trader_logo.svg
-└── www/
-    ├── ct-dashboard.html      # Jinja template
-    └── ct_dashboard.py        # Context loader (get_context)
+│   ├── js/ct_dashboard.js    # 750-line real-time dashboard controller
+│   └── css/ct_dashboard.css  # Dark-theme dashboard stylesheet
+├── www/
+│   └── ct-dashboard.html     # Fullscreen dashboard Jinja template
+└── crypto_trader/doctype/    # 10 custom Frappe DocTypes
 ```
 
 ---
 
-## License
+## 🛠️ Tech Stack
 
-MIT — see [LICENSE](LICENSE)
+| Layer | Technology |
+|---|---|
+| **Framework** | Frappe v16 (Python backend + JS frontend) |
+| **ML Model** | LightGBM (gradient boosting decision trees) |
+| **AI Validation** | Claude 3.5 Sonnet (Anthropic API) |
+| **Exchange API** | CoinDCX (India's leading crypto exchange) |
+| **Charting** | TradingView Lightweight Charts v4.1 |
+| **Realtime** | Frappe WebSocket / Socket.IO |
+| **Database** | MariaDB via Frappe ORM |
+| **Scheduler** | Frappe Scheduler (cron-based) |
+| **Notifications** | Telegram Bot API + Frappe Sendmail |
 
 ---
 
-## Author
+## 🗺️ Roadmap
 
-**Rohan Kumbhar** · [Dexciss Technology](https://dexciss.com)  
-Email: rkrohankumbhar@gmail.com
+- [ ] Multi-exchange support (Binance, WazirX)
+- [ ] Portfolio rebalancing automation
+- [ ] No-code strategy builder UI
+- [ ] Webhook-based instant signal alerts
+- [ ] Mobile PWA dashboard
+- [ ] Reinforcement learning trader (PPO agent)
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+**Built entirely by Rohan Kumbhar**
+
+*"I built Frappe's first AI + ML crypto trading platform — from scratch, completely alone."*
+
+This project has no organizational backing. Every line of code — from the ML pipeline to the real-time dashboard to the risk engine — was designed and written by a single developer with a vision to prove that Frappe can power anything.
+
+[![GitHub](https://img.shields.io/badge/GitHub-rohankumbhar--01-181717?style=for-the-badge&logo=github)](https://github.com/rohankumbhar-01)
+
+</div>
+
+---
+
+## ⚠️ Disclaimer
+
+This software is for **educational and research purposes only**.
+Cryptocurrency trading involves substantial financial risk and you may lose your entire investment.
+Always test extensively in **paper mode** before using real funds.
+The author is not responsible for any trading losses incurred using this software.
+
+---
+
+<div align="center">
+
+**⭐ If this project impressed you, give it a star!**
+
+*Coin Trader — Where Frappe meets the Blockchain*
+
+</div>

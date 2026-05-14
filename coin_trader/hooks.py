@@ -40,8 +40,8 @@ scheduler_events = {
 app_include_css = []
 app_include_js  = []
 
-web_include_css = ["/assets/coin_trader/css/ct_dashboard.css"]
-web_include_js  = ["/assets/coin_trader/js/ct_dashboard.js"]
+web_include_css = []
+web_include_js  = []
 
 # DocType class overrides
 override_doctype_class = {}

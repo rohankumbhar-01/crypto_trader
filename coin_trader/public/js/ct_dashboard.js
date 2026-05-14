@@ -14,6 +14,9 @@
 
 /* ═ STATE ═════════════════════════════════════════════════════════ */
 
+// Popular INR pairs shown when no active config
+const CT_DEFAULT_SYMBOLS = ["BTCINR","ETHINR","XRPINR","SOLINR","ADAINR","DOGINR","BNBINR","MATICUSDT"];
+
 const CT = {
     snapshot:        null,           // last snapshot payload
     chartSymbol:     null,
@@ -26,18 +29,25 @@ const CT = {
     obTimer:         null,
     chartTimer:      null,
     scanInFlight:    false,
+    defaultMode:     false,          // true when showing ticker data without config
 };
 
 /* ═ BOOT ══════════════════════════════════════════════════════════ */
 
 frappe.ready(function () {
     initRealtime();
-    initChart();
-    pollSnapshot();                        // immediate
+    pollSnapshot();                        // immediate — populates symbols
     loadTradeHistory();
     CT.pollTimer  = setInterval(pollSnapshot, 5000);
     CT.obTimer    = setInterval(refreshOrderBook, 4000);
     CT.chartTimer = setInterval(refreshChart, 30000);
+
+    // Init chart after a short delay so the flex container has real dimensions
+    setTimeout(function() {
+        initChart();
+        // If symbols already loaded by the time chart inits, draw immediately
+        if (CT.chartSymbol) refreshChart();
+    }, 300);
 
     // Buttons
     $("#btn-refresh").on("click", () => { pollSnapshot(); refreshOrderBook(); refreshChart(); loadTradeHistory(); });
@@ -63,7 +73,7 @@ frappe.ready(function () {
 /* ═ REALTIME ══════════════════════════════════════════════════════ */
 
 function initRealtime() {
-    frappe.realtime.on("ct_scan_complete",   d => { renderScan(d.results || []); pollSnapshot(); });
+    frappe.realtime.on("ct_scan_complete",   d => { renderScan(d.signals || d.results || []); pollSnapshot(); });
     frappe.realtime.on("ct_position_opened", () => { pollSnapshot(); frappe.show_alert({ message: "✅ Position opened", indicator: "green" }, 3); });
     frappe.realtime.on("ct_position_closed", () => { pollSnapshot(); loadTradeHistory(); frappe.show_alert({ message: "Position closed", indicator: "blue" }, 3); });
 }
@@ -79,23 +89,91 @@ function pollSnapshot() {
             const snap = r.message;
             CT.snapshot = snap;
 
+            // Debug: log session user and tracked symbols
+            console.log("[CT] session_user:", snap.session_user, "| tracked:", snap.tracked_symbols, "| market keys:", Object.keys(snap.market || {}));
+
             // Initialise chart/orderbook symbol from tracked list on first load
             if (!CT.chartSymbol && snap.tracked_symbols.length) {
                 CT.chartSymbol = snap.tracked_symbols[0];
                 CT.obSymbol    = snap.tracked_symbols[0];
                 populateSymbolSelectors(snap.tracked_symbols);
-                refreshChart();
                 refreshOrderBook();
+                // Ensure chart is ready before drawing
+                if (CT.chart && CT.candleSeries) {
+                    refreshChart();
+                } else {
+                    setTimeout(function() { initChart(); refreshChart(); }, 400);
+                }
             }
 
             renderMode(snap);
             renderKpis(snap);
-            renderTicker(snap);
-            renderMarket(snap);
+
+            // If no tracked symbols, fetch full public ticker and display default pairs
+            if (!snap.tracked_symbols.length) {
+                loadPublicTicker();
+            } else {
+                renderTicker(snap);
+                renderMarket(snap);
+            }
+
             renderPositions(snap);
             renderFutureOrders(snap);
             updateLastUpdate();
         },
+    });
+}
+
+function loadPublicTicker() {
+    frappe.call({
+        method: "coin_trader.dashboard_api.get_market_ticker",
+        type:   "GET",
+        callback(r) {
+            const tickerArr = r.message || [];
+            if (!tickerArr.length) return;
+
+            // Build map
+            const map = {};
+            tickerArr.forEach(t => { if (t.market) map[t.market] = t; });
+
+            // Pick popular symbols available in the response
+            const available = CT_DEFAULT_SYMBOLS.filter(s => map[s]);
+            const displaySyms = available.length ? available : tickerArr.slice(0, 8).map(t => t.market);
+
+            // Build synthetic snap.market
+            const market = {};
+            displaySyms.forEach(s => {
+                const t = map[s];
+                if (!t) return;
+                market[s] = {
+                    last_price:     parseFloat(t.last_price || 0),
+                    high:           parseFloat(t.high || 0),
+                    low:            parseFloat(t.low || 0),
+                    volume:         parseFloat(t.volume || 0),
+                    bid:            parseFloat(t.bid || 0),
+                    ask:            parseFloat(t.ask || 0),
+                    change_24_hour: parseFloat(t.change_24_hour || 0),
+                };
+            });
+
+            // Synthetic snapshot for rendering
+            const synthSnap = Object.assign({}, CT.snapshot || {}, {
+                market,
+                tracked_symbols: displaySyms,
+            });
+
+            // Set chart symbol if not set
+            if (!CT.chartSymbol && displaySyms.length) {
+                CT.chartSymbol = displaySyms[0];
+                CT.obSymbol    = displaySyms[0];
+                populateSymbolSelectors(displaySyms);
+                refreshChart();
+                refreshOrderBook();
+            }
+
+            renderTicker(synthSnap);
+            renderMarket(synthSnap);
+        }
     });
 }
 
@@ -177,7 +255,7 @@ function renderTicker(snap) {
 function renderMarket(snap) {
     const wrap = document.getElementById("market-body");
     const symbols = snap.tracked_symbols || [];
-    if (!symbols.length) { wrap.innerHTML = `<div class="ct-empty">No symbols configured</div>`; return; }
+    if (!symbols.length) { wrap.innerHTML = `<div class="ct-loading">Loading market data…</div>`; return; }
 
     let html = `<div class="ct-market-list">`;
     symbols.forEach(sym => {
@@ -229,10 +307,20 @@ function renderMarket(snap) {
 function initChart() {
     const container = document.getElementById("price-chart");
     if (!container || !window.LightweightCharts) return;
+    if (CT.chart) return;   // already initialised
+
+    // Use parent height if container hasn't painted yet
+    const parent = container.parentElement;
+    const w = container.clientWidth || (parent && parent.clientWidth) || 600;
+    const h = container.clientHeight > 60 ? container.clientHeight
+            : (parent && parent.clientHeight > 60 ? parent.clientHeight : 340);
+
+    container.style.width  = "100%";
+    container.style.height = h + "px";
 
     CT.chart = LightweightCharts.createChart(container, {
-        width:  container.clientWidth,
-        height: container.clientHeight || 320,
+        width:  w,
+        height: h,
         layout: { background: { color: "#0f1525" }, textColor: "#93a0c2" },
         grid:   { vertLines: { color: "#1c2540" }, horzLines: { color: "#1c2540" } },
         crosshair: { mode: 1 },
@@ -256,12 +344,16 @@ function initChart() {
     }).observe(container);
 }
 
+function chartLimit(iv) {
+    return { "1m": 500, "5m": 500, "15m": 500, "30m": 500, "1h": 500, "4h": 500, "1d": 1000 }[iv] || 500;
+}
+
 function refreshChart() {
     if (!CT.chart || !CT.candleSeries || !CT.chartSymbol) return;
     frappe.call({
         method: "coin_trader.dashboard_api.get_candles_data",
         type:   "GET",
-        args:   { symbol: CT.chartSymbol, interval: CT.chartInterval, limit: 200 },
+        args:   { symbol: CT.chartSymbol, interval: CT.chartInterval, limit: chartLimit(CT.chartInterval) },
         callback(r) {
             const data = r.message || [];
             if (!data.length) return;
@@ -417,7 +509,15 @@ function runScan() {
         callback(r) {
             CT.scanInFlight = false;
             btn.disabled = false; btn.textContent = "▶ Run Scan";
-            renderScan(r.message || []);
+            const msg = r.message || {};
+            if (msg.error) {
+                frappe.show_alert({ message: msg.error, indicator: "orange" }, 5);
+                setText("scan-summary", msg.error);
+                return;
+            }
+            // scanner returns { signals: [...], symbol_count: N }
+            const results = Array.isArray(msg) ? msg : (msg.signals || []);
+            renderScan(results, msg.symbol_count);
             pollSnapshot();
         },
         error() {
@@ -427,9 +527,10 @@ function runScan() {
     });
 }
 
-function renderScan(results) {
+function renderScan(results, symbolCount) {
     const wrap = document.getElementById("scan-body");
-    setText("scan-summary", `${results.length} symbols scanned`);
+    const cnt = symbolCount !== undefined ? symbolCount : (results || []).length;
+    setText("scan-summary", `${cnt} symbols scanned · ${(results||[]).length} signals`);
     if (!results.length) { wrap.innerHTML = `<div class="ct-empty">No results</div>`; return; }
 
     let html = `<div class="ct-scan-hd">
@@ -660,15 +761,20 @@ window.CT_DASH = {
 
 function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
 
-// CoinDCX ticker uses FLAT keys ("BTCINR"). Snapshot returns these directly.
+// CoinDCX ticker uses FLAT keys ("BTCINR"). Snapshot market keys are already flat.
+// CT_DEFAULT_SYMBOLS are already flat keys. Tracked symbols from config have prefix/underscore.
 function symbolToMkt(sym) {
     if (!sym) return "";
-    return sym.toUpperCase().replace(/^[A-Z]-/, "").replace("_", "");
+    // Already a flat key (no dash, no underscore) → return as-is
+    if (!sym.includes("-") && !sym.includes("_")) return sym.toUpperCase();
+    return sym.toUpperCase().replace(/^[A-Z]-/, "").replace(/_/g, "");
 }
 function mktToSymbol(mkt, list) {
     return (list || []).find(s => symbolToMkt(s) === mkt) || mkt;
 }
-function shortSym(mkt) { return mkt.replace(/^[A-Z]-/, "").replace("_", ""); }
+function shortSym(mkt) {
+    return mkt.replace(/^[A-Z]-/, "").replace(/_/g, "");
+}
 
 function fmt(n) {
     const v = parseFloat(n);

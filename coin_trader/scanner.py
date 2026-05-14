@@ -20,6 +20,7 @@ dashboard can update without polling.
 import frappe
 from frappe import _
 from frappe.utils import flt, cint, now_datetime
+from coin_trader import notifier
 
 
 # ---------------------------------------------------------------------------
@@ -92,6 +93,10 @@ def _scan_user(cfg: dict) -> None:
             },
             user=user,
         )
+        try:
+            notifier.notify_scan_summary(user, results, len(symbols))
+        except Exception:
+            pass
 
 
 def _scan_symbol(

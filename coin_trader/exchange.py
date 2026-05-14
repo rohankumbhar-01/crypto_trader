@@ -366,6 +366,6 @@ def get_trade_history_auth(
 def verify_exchange_credential(user: str | None = None) -> dict:
 	"""Verify the active exchange credential for a user. Called from CT Exchange Credential form."""
 	user = user or frappe.session.user
-	if frappe.session.user != user and not frappe.has_role("System Manager"):
+	if frappe.session.user != user and "System Manager" not in frappe.get_roles(frappe.session.user):
 		frappe.throw(_("Not permitted."), frappe.PermissionError)
 	return verify_credential(user)

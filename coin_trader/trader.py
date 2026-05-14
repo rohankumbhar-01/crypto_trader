@@ -34,6 +34,7 @@ from frappe import _
 from frappe.utils import flt, cint, now_datetime, get_datetime
 
 from coin_trader.risk_engine import update_trailing_stoploss, check_exit
+from coin_trader import notifier
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +122,10 @@ def open_position(user: str, signal: dict, risk_decision: dict) -> dict:
             {"symbol": symbol, "direction": action, "qty": qty, "price": fill_price},
             user=user,
         )
+        try:
+            notifier.notify_position_opened(user, symbol, fill_price, qty, target, stoploss, dry_run)
+        except Exception:
+            pass
         # Store action in returned dict for downstream use (not a DocType field)
         result = doc.as_dict()
         result["_action"]   = action
@@ -212,6 +217,16 @@ def close_position(position: dict, exit_price: float, exit_reason: str) -> bool:
             {"symbol": symbol, "pnl": pnl, "exit_reason": exit_reason},
             user=user,
         )
+        try:
+            reason_lower = (exit_reason or "").lower()
+            if "stop" in reason_lower or "stoploss" in reason_lower:
+                notifier.notify_stoploss_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
+            elif "target" in reason_lower:
+                notifier.notify_target_hit(user, symbol, exit_price, pnl, pnl_pct, dry_run)
+            else:
+                notifier.notify_position_closed(user, symbol, pnl, pnl_pct, exit_reason, dry_run)
+        except Exception:
+            pass
         return True
 
     except Exception as e:
