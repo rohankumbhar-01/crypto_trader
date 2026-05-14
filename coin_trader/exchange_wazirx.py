@@ -233,16 +233,17 @@ def get_balances(user: str) -> list[dict]:
     """
     Return all non-zero wallet balances.
     Each entry: {currency, balance, locked_balance, free}
+    WazirX balance endpoint: GET /sapi/v1/funds — returns list of {asset, free, locked}
     """
     cred = _get_wazirx_credential(user)
-    data = _get("/sapi/v1/account", {}, cred["api_key"], cred["api_secret"])
+    data = _get("/sapi/v1/funds", {}, cred["api_key"], cred["api_secret"])
     out  = []
-    for asset, info in data.get("assets", {}).items():
-        free   = flt(info.get("free", 0))
-        locked = flt(info.get("locked", 0))
+    for item in (data if isinstance(data, list) else []):
+        free   = flt(item.get("free", 0))
+        locked = flt(item.get("locked", 0))
         if free + locked > 0:
             out.append({
-                "currency":       asset.upper(),
+                "currency":       (item.get("asset") or "").upper(),
                 "balance":        free + locked,
                 "locked_balance": locked,
                 "free":           free,
@@ -259,7 +260,7 @@ def get_inr_balance(user: str) -> float:
 
 
 def get_account_info(user: str) -> dict:
-    """Return full account info from WazirX."""
+    """Return account trading status from WazirX."""
     cred = _get_wazirx_credential(user)
     return _get("/sapi/v1/account", {}, cred["api_key"], cred["api_secret"])
 
@@ -288,9 +289,10 @@ def verify_credential(user: str) -> dict:
                 },
             )
         return {
-            "valid":       True,
-            "balance_inr": inr_bal,
-            "can_trade":   True,
+            "valid":        True,
+            "balance_inr":  inr_bal,
+            "can_trade":    info.get("canTrade", True),
+            "account_type": info.get("accountType", "default"),
         }
     except Exception as e:
         return {"valid": False, "balance_inr": 0.0, "error": str(e)[:200]}
