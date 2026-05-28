@@ -11,10 +11,12 @@
 [![LightGBM](https://img.shields.io/badge/ML-LightGBM-00b4d8?style=for-the-badge)](https://lightgbm.readthedocs.io)
 [![Claude AI](https://img.shields.io/badge/AI-Claude%20(Anthropic)-f5a623?style=for-the-badge)](https://anthropic.com)
 [![CoinDCX](https://img.shields.io/badge/Exchange-CoinDCX-6c47ff?style=for-the-badge)](https://coindcx.com)
+[![Binance](https://img.shields.io/badge/Exchange-Binance-f0b90b?style=for-the-badge)](https://binance.com)
+[![WazirX](https://img.shields.io/badge/Exchange-WazirX-1a6be0?style=for-the-badge)](https://wazirx.com)
 [![License](https://img.shields.io/badge/License-MIT-10d57b?style=for-the-badge)](LICENSE)
 
 **A fully automated, real-time cryptocurrency trading system built entirely on the Frappe framework.**
-Combines Machine Learning predictions, Claude AI validation, and a live fullscreen dashboard —
+Combines Machine Learning predictions, Claude AI validation, multi-exchange support, and a live fullscreen dashboard —
 all in one ERPNext-grade application.
 
 [🚀 Features](#-features) · [📊 Dashboard](#-live-dashboard) · [🤖 How It Works](#-how-it-works) · [⚙️ Installation](#️-installation)
@@ -36,6 +38,8 @@ Built from scratch by a single developer — Rohan Kumbhar — Coin Trader reima
 | 🔒 **Risk-First Design** | 5-layer risk guard before any trade executes |
 | 📄 **Paper + Live Mode** | Test strategies safely in paper mode before going live with real funds |
 | 🏗️ **Pure Frappe** | No external dashboard — runs natively inside your Frappe/ERPNext instance |
+| 🌐 **Multi-Exchange** | Trade on CoinDCX, Binance, or WazirX — switch with a single config change |
+| 🔔 **Webhook Alerts** | Inbound signals from TradingView/bots + outbound events to any URL |
 
 ---
 
@@ -69,13 +73,18 @@ Built from scratch by a single developer — Rohan Kumbhar — Coin Trader reima
 4. **Consecutive loss guard** — pauses trading after N losses in a row
 5. **Trailing stop-loss** — dynamically moves stop-loss up as price rises to lock in profits
 
-### 📡 CoinDCX Integration
-- Live market ticker for all INR pairs (BTCINR, ETHINR, SOLINR, etc.)
-- Real-time order book (bid/ask depth) per symbol
-- OHLCV candle data for all timeframes: 5m, 15m, 1h, 4h, 1d
-- Place live market buy/sell orders with quantity calculation
-- Portfolio INR balance sync
-- All API calls proxied server-side — API keys never exposed to the browser
+### 🌐 Multi-Exchange Support ✅
+Three fully integrated exchanges — switch by changing the `exchange` field on `CT Exchange Credential`:
+
+| Exchange | Pairs | Balance | Orders | Market Data |
+|---|---|---|---|---|
+| **CoinDCX** | INR pairs (BTCINR, ETHINR…) | INR | Market / Limit | Ticker, Candles, Orderbook |
+| **Binance** | USDT pairs (BTCUSDT, ETHUSDT…) | USDT → INR converted | Market / Limit | Ticker, Candles, Orderbook |
+| **WazirX** | INR pairs (lowercase) | INR | Market / Limit | Ticker, Candles, Orderbook |
+
+- Unified routing layer in `exchange.py` — all callers use `get_inr_balance_routed()` and `place_order_routed()`
+- Binance USDT balances auto-converted to INR using live CoinDCX USDT/INR rate
+- Dashboard ticker, candles, and order book all route to the correct exchange automatically
 
 ### 🔔 Smart Notification System
 - **Telegram Bot** — rich HTML-formatted alerts delivered instantly
@@ -88,12 +97,28 @@ Built from scratch by a single developer — Rohan Kumbhar — Coin Trader reima
   - 📊 Daily P&L summary (total P&L, win rate, open positions)
 - **Test button** directly on the config form — verify your Telegram/Email in one click
 
+### 🪝 Webhook System (Inbound + Outbound) ✅
+
+#### Inbound Webhooks — receive signals from external tools
+- `POST /api/method/coin_trader.webhook_handler.receive?user=<user>`
+- Authenticated via `X-CT-Token` header (48-char hex secret stored encrypted)
+- Compatible with **TradingView alerts**, custom bots, or any HTTP client
+- Signal format: `{"signal": "BUY", "symbol": "BTCINR", "close": 7500000}`
+- `HOLD` signals are silently skipped; `BUY`/`SELL` feed directly into the full ML→Risk→Trade pipeline
+
+#### Outbound Webhooks — push trade events to any URL
+- Per-user `CT Webhook Config` DocType with per-event toggle checkboxes
+- Events fired: `position_opened`, `position_closed`, `stoploss_hit`, `target_hit`, `scan_complete`, `daily_summary`
+- Each POST includes full event payload (symbol, price, P&L, dry_run flag, timestamp)
+- Last delivery status + response code written back to the config for debugging
+- `test_outbound_webhook()` button on the form sends a live test payload
+
 ### 📜 Complete Trade Lifecycle (Fully Automated)
 ```
 Scheduler (every 15 min)
   → ML Predict → AI Validate → Risk Check → Execute Order
   → Monitor Position (every 1 min) → Close on SL/Target
-  → Log Trade → Send Notification → Update Dashboard
+  → Log Trade → Send Notification → Outbound Webhook → Update Dashboard
 ```
 
 ### 🧪 Walk-Forward Backtesting
@@ -101,6 +126,14 @@ Scheduler (every 15 min)
 - Metrics: Win Rate, Profit Factor, Sharpe Ratio, Max Drawdown, Expectancy, Avg Hold
 - Per-trade breakdown with entry, exit, duration, and P&L
 - Directly accessible from the AI Signal Probe panel on the live dashboard
+
+---
+
+## 📸 Screenshots
+
+### Live Dashboard
+
+![Coin Trader Live Dashboard](docs/screenshots/dashboard.png)
 
 ---
 
@@ -136,7 +169,8 @@ Scheduler (every 15 min)
 ```
 Every 15 minutes (Frappe Scheduler):
 
-  CoinDCX API ──► Candle Data (OHLCV, 1000 bars)
+  Exchange API ──► Candle Data (OHLCV, 1000 bars)
+  (CoinDCX / Binance / WazirX)
                         │
                         ▼
               ┌──────────────────┐
@@ -170,12 +204,12 @@ Every 15 minutes (Frappe Scheduler):
          Position opened → Monitor every 1 min → Close on SL/Target
                        │
                        ▼
-         CT Trade Log + Telegram/Email Notification + Dashboard update
+         CT Trade Log + Telegram/Email Notification + Outbound Webhook + Dashboard update
 ```
 
 ---
 
-## 📦 Frappe DocTypes (10 Custom DocTypes)
+## 📦 Frappe DocTypes (11 Custom DocTypes)
 
 | DocType | Purpose |
 |---|---|
@@ -187,8 +221,9 @@ Every 15 minutes (Frappe Scheduler):
 | `CT Backtest Result` | Walk-forward backtest results with full metrics |
 | `CT Daily Summary` | End-of-day aggregated P&L and trade count |
 | `CT AI Provider` | Claude / GPT-4 API key and model configuration |
-| `CT Exchange Credential` | CoinDCX API key + secret (encrypted via Frappe Password field) |
+| `CT Exchange Credential` | API key + secret for CoinDCX / Binance / WazirX (encrypted) |
 | `CT Notification Config` | Telegram bot token + chat ID + email for alerts |
+| `CT Webhook Config` | Inbound token + outbound URL with per-event toggles |
 
 ---
 
@@ -223,7 +258,8 @@ bench restart
 
 ```
 1. Exchange Credential  →  /desk#Form/CT Exchange Credential/new
-                           Add your CoinDCX API Key + Secret
+                           Choose exchange: CoinDCX / Binance / WazirX
+                           Add your API Key + Secret
 
 2. AI Provider          →  /desk#Form/CT AI Provider/new
                            Add your Anthropic (Claude) API key
@@ -241,6 +277,10 @@ bench restart
 6. Notifications        →  /desk#Form/CT Notification Config/new
                            Add Telegram bot token + chat ID
                            Click "Send Test Notification" to verify
+
+7. Webhooks (optional)  →  /desk#Form/CT Webhook Config/new
+                           Auto-generates a secret token on save
+                           Set outbound URL for trade event POSTs
 ```
 
 ---
@@ -258,6 +298,9 @@ profit_target_pct  = 2.0     # Take-profit trigger (% above entry)
 max_daily_loss_inr = 1000    # Daily loss circuit breaker (INR)
 cooldown_min       = 30      # Cooldown minutes after a losing trade
 dry_run            = True    # Paper mode — no real orders placed
+
+# CT Exchange Credential
+exchange           = "CoinDCX"  # CoinDCX | Binance | WazirX
 ```
 
 ---
@@ -266,11 +309,15 @@ dry_run            = True    # Paper mode — no real orders placed
 
 ```
 coin_trader/
-├── dashboard_api.py          # CoinDCX server-side proxy + snapshot API
+├── dashboard_api.py          # Multi-exchange server-side proxy + snapshot API
 ├── scanner.py                # Scheduled scan orchestrator (every 15 min)
 ├── trader.py                 # Trade execution engine (paper + live)
 ├── notifier.py               # Telegram + Email notification system
-├── exchange.py               # CoinDCX REST API wrapper
+├── exchange.py               # Exchange routing layer + CoinDCX adapter
+├── exchange_binance.py       # Binance REST API adapter
+├── exchange_wazirx.py        # WazirX REST API adapter
+├── webhook_handler.py        # Inbound webhook receiver (TradingView / bots)
+├── outbound_webhook.py       # Outbound event dispatcher (POST to user URL)
 ├── risk_engine.py            # 5-layer risk guard system
 ├── ai_adapter.py             # Claude / GPT-4 AI validation layer
 ├── backtest_engine.py        # Walk-forward backtesting engine
@@ -281,11 +328,11 @@ coin_trader/
 │   ├── train_model.py        # LightGBM daily training pipeline
 │   └── predict.py            # Model inference + confidence scoring
 ├── public/
-│   ├── js/ct_dashboard.js    # 750-line real-time dashboard controller
+│   ├── js/ct_dashboard.js    # Real-time dashboard controller
 │   └── css/ct_dashboard.css  # Dark-theme dashboard stylesheet
 ├── www/
 │   └── ct-dashboard.html     # Fullscreen dashboard Jinja template
-└── crypto_trader/doctype/    # 10 custom Frappe DocTypes
+└── crypto_trader/doctype/    # 11 custom Frappe DocTypes
 ```
 
 ---
@@ -297,23 +344,30 @@ coin_trader/
 | **Framework** | Frappe v16 (Python backend + JS frontend) |
 | **ML Model** | LightGBM (gradient boosting decision trees) |
 | **AI Validation** | Claude 3.5 Sonnet (Anthropic API) |
-| **Exchange API** | CoinDCX (India's leading crypto exchange) |
+| **Exchanges** | CoinDCX · Binance · WazirX |
 | **Charting** | TradingView Lightweight Charts v4.1 |
 | **Realtime** | Frappe WebSocket / Socket.IO |
 | **Database** | MariaDB via Frappe ORM |
 | **Scheduler** | Frappe Scheduler (cron-based) |
 | **Notifications** | Telegram Bot API + Frappe Sendmail |
+| **Webhooks** | HMAC-authenticated inbound + outbound HTTP |
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] Multi-exchange support (Binance, WazirX)
-- [ ] Portfolio rebalancing automation
-- [ ] No-code strategy builder UI
-- [ ] Webhook-based instant signal alerts
-- [ ] Mobile PWA dashboard
-- [ ] Reinforcement learning trader (PPO agent)
+| Feature | Status |
+|---|---|
+| Core ML + AI trading engine | ✅ Done |
+| Live fullscreen dashboard | ✅ Done |
+| 5-layer risk engine | ✅ Done |
+| Telegram + Email notifications | ✅ Done |
+| Walk-forward backtesting | ✅ Done |
+| **Multi-exchange support (Binance, WazirX)** | ✅ Done |
+| **Webhook-based instant signal alerts** | ✅ Done |
+| Portfolio rebalancing automation | ⬜ Planned |
+| No-code strategy builder UI | ⬜ Planned |
+| Reinforcement learning trader (PPO agent) | ⬜ Planned |
 
 ---
 
