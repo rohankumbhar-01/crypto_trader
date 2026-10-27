@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Coin Trader Settings</title><link rel="stylesheet" href="popup.css"></head>
+<body><main class="app">
+  <header class="topbar"><div class="brand-mark">CT</div><div><div class="eyebrow">CONNECTION</div><h1>Backend settings</h1></div></header>
+  <section class="panel">
+    <h2>Connect your Frappe site</h2>
+    <p class="subtle">Use your own HTTPS Frappe site URL and a dedicated API key/secret. The token is stored locally in Chrome extension storage and is never sent to any third-party service.</p>
+    <form id="settingsForm">
+      <label class="label" for="siteUrl">Frappe site URL</label>
+      <input id="siteUrl" type="url" placeholder="https://erp.example.com" required>
+      <label class="label" for="apiToken">API token</label>
+      <input id="apiToken" type="password" placeholder="api_key:api_secret" required autocomplete="off">
+      <p class="subtle">In Frappe, create a dedicated user/API key with only the permissions needed for your trading records. Enter the combined value <code>api_key:api_secret</code>.</p>
+      <button class="button primary" type="submit">Save and test connection</button>
+    </form>
+    <div id="message" role="status" class="message" hidden></div>
+  </section>
+  <section class="panel"><h2>Safety</h2><p class="subtle">The extension does not store WazirX exchange keys and does not enable live trading. Keep exchange credentials on the Frappe server. The extension's scan action is paper-mode-only.</p></section>
+  <footer><button id="clearBtn" class="text-button">Clear saved credentials</button><span>Coin Trader · 0.1.0</span></footer>
+</main><script src="options.js"></script></body></html>

@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Coin Trader — WazirX Control Panel",
+  "version": "0.1.0",
+  "description": "A secure Chrome control panel for your self-hosted Coin Trader Frappe app.",
+  "permissions": ["storage"],
+  "optional_host_permissions": ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"],
+  "action": {
+    "default_title": "Coin Trader",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}

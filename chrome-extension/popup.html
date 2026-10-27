@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Coin Trader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand-mark">CT</div>
+      <div><div class="eyebrow">COIN TRADER</div><h1>AI Trading Desk</h1></div>
+      <span id="connectionDot" class="dot" title="Connection status"></span>
+    </header>
+    <section class="mode-card">
+      <div><span class="label">TRADING MODE</span><strong id="modeValue">Not connected</strong></div>
+      <span id="activeBadge" class="badge muted">OFFLINE</span>
+    </section>
+    <section class="metrics">
+      <article class="metric"><span>Open positions</span><strong id="openPositions">—</strong></article>
+      <article class="metric"><span>Today's trades</span><strong id="todayTrades">—</strong></article>
+      <article class="metric"><span>Today's P&amp;L</span><strong id="todayPnl">—</strong></article>
+      <article class="metric"><span>Win rate</span><strong id="winRate">—</strong></article>
+    </section>
+    <section class="panel">
+      <div class="section-heading"><h2>Engine status</h2><button id="refreshBtn" class="icon-button" aria-label="Refresh">↻</button></div>
+      <p id="statusText" class="subtle">Connect your Frappe site in settings to load your trading status.</p>
+      <div class="detail-row"><span>Scanner</span><strong id="scannerStatus">—</strong></div>
+      <div class="detail-row"><span>Active symbols</span><strong id="symbolCount">—</strong></div>
+      <div class="detail-row"><span>Risk / trade</span><strong id="riskPerTrade">—</strong></div>
+      <div class="detail-row"><span>Daily loss limit</span><strong id="dailyLimit">—</strong></div>
+    </section>
+    <section class="panel">
+      <div class="section-heading"><h2>Recent trades</h2><span class="subtle">Latest 5</span></div>
+      <div id="tradeList" class="trade-list"><div class="empty">No data loaded.</div></div>
+    </section>
+    <section class="actions">
+      <button id="paperModeBtn" class="button secondary" disabled>Force paper mode</button>
+      <button id="scanBtn" class="button primary" disabled>Run paper scan</button>
+    </section>
+    <p class="footnote">Live trading is never enabled by this extension. Configure live mode in Frappe only after validating paper-trading results.</p>
+    <div id="message" role="status" class="message" hidden></div>
+    <footer><button id="settingsBtn" class="text-button">Connection settings</button><span id="siteLabel">No site configured</span></footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

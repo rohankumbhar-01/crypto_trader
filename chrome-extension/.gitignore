@@ -1,0 +1,5 @@
+# Local extension packaging output
+dist/
+*.zip
+.env
+.env.*
