@@ -53,7 +53,7 @@ function render(snapshotData) {
   $("winRate").textContent = stats.win_rate_pct == null ? "—" : `${Number(stats.win_rate_pct).toFixed(1)}%`;
   $("scannerStatus").textContent = cfg.is_active ? "Configured" : "Inactive";
   $("symbolCount").textContent = stats.enabled_symbols ?? "—";
-  $("riskPerTrade").textContent = cfg.risk_per_trade_pct == null ? "—" : `${cfg.risk_per_trade_pct}%`;
+  $("riskPerTrade").textContent = cfg.inr_per_trade == null ? "—" : money(cfg.inr_per_trade);
   $("dailyLimit").textContent = cfg.max_daily_loss_inr == null ? "—" : money(cfg.max_daily_loss_inr);
   $("statusText").textContent = snapshotData.message || "Connected to your Coin Trader backend.";
   $("paperModeBtn").disabled = !cfg.name || paper;
