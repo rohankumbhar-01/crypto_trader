@@ -47,17 +47,19 @@ def get_dashboard_snapshot():
         "name": config.name,
         "is_active": bool(config.is_active),
         "dry_run": bool(config.dry_run),
-        "risk_per_trade_pct": flt(getattr(config, "risk_per_trade_pct", 0)),
+        "inr_per_trade": flt(getattr(config, "inr_per_trade", 0)),
+        "stop_loss_pct": flt(getattr(config, "stop_loss_pct", 0)),
+        "profit_target_pct": flt(getattr(config, "profit_target_pct", 0)),
         "max_daily_loss_inr": flt(getattr(config, "max_daily_loss_inr", 0)),
     }
     positions = frappe.get_all(
         "CT Open Position",
-        filters={"user": user},
+        filters={"user": user, "status": "Open"},
         fields=["name", "symbol", "status", "buy_price", "quantity", "current_price", "pnl_inr", "pnl_pct"],
         order_by="creation desc",
         limit_page_length=100,
     )
-    open_positions = [p for p in positions if str(p.get("status") or "").lower() not in ("closed", "complete", "completed")]
+    open_positions = positions
     trades = frappe.get_all(
         "CT Trade Log",
         filters={"user": user},
